@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+<form 
+	method="{{oForm.get_submit_method}}"
+	action="{{path('signup')}}"
+	enctype="{{oForm.get_enctype}}"
+>
+	{{oForm.label_for('username', {html: 'Mail'})|raw}}
+	{{oForm.text('username')|raw}}
+	
+	{{oForm.label_for('pw', {html: 'Password'})|raw}}
+	{{oForm.field('pw', 'password')|raw}}
+	
+	{{oForm.label_for('pw2', {html: 'Repeat password'})|raw}}
+	{{oForm.field('pw2', 'password')|raw}}
+	
+	{{oForm.enable|raw}}
+	
+	<button type="submit">Signup</button>
+
+</form>
+
+{% endblock %}
