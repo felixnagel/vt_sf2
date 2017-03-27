@@ -16,11 +16,11 @@ class Map{
 	 */
 	private $id;
 	/**
-	 * @ORM\Column(type="string")
+	 * @ORM\Column(type="string", nullable=true)
 	 */
 	private $title;
 	/**
-	 * @ORM\Column(type="datetime")
+	 * @ORM\Column(type="datetime", nullable=true)
 	 */
 	private $releasedAt;
 	/**
@@ -28,88 +28,114 @@ class Map{
 	 */
 	private $createdBy;
 	/**
-	 * @ORM\Column(type="datetime")
+	 * @ORM\Column(type="text", nullable=true)
 	 */
-	private $createdAt;
+	private $blocks;
+
 
     /**
-     * Gets the value of id.
-     * @return mixed
+     * Get id
+     *
+     * @return integer
      */
-    public function getId(){
+    public function getId()
+    {
         return $this->id;
     }
+
     /**
-     * Sets the value of id.
-     * @param mixed $id the id
-     * @return self
+     * Set title
+     *
+     * @param string $title
+     *
+     * @return Map
      */
-    private function _setId($id){
-        $this->id = $id;
+    public function setTitle($title = null)
+    {
+        $this->title = $title;
+
         return $this;
     }
+
     /**
-     * Gets the value of title.
-     * @return mixed
+     * Get title
+     *
+     * @return string
      */
-    public function getTitle(){
+    public function getTitle()
+    {
         return $this->title;
     }
+
     /**
-     * Sets the value of title.
-     * @param mixed $title the title
-     * @return self
+     * Set releasedAt
+     *
+     * @param \DateTime $releasedAt
+     *
+     * @return Map
      */
-    private function _setTitle($title){
-        $this->title = $title;
+    public function setReleasedAt($releasedAt)
+    {
+        $this->releasedAt = $releasedAt;
+
         return $this;
     }
+
     /**
-     * Gets the value of releasedAt.
-     * @return mixed
+     * Get releasedAt
+     *
+     * @return \DateTime
      */
-    public function getReleasedAt(){
+    public function getReleasedAt()
+    {
         return $this->releasedAt;
     }
+
     /**
-     * Sets the value of releasedAt.
-     * @param mixed $releasedAt the released at
-     * @return self
+     * Set createdBy
+     *
+     * @param integer $createdBy
+     *
+     * @return Map
      */
-    private function _setReleasedAt($releasedAt){
-        $this->releasedAt = $releasedAt;
+    public function setCreatedBy($createdBy)
+    {
+        $this->createdBy = $createdBy;
+
         return $this;
     }
+
     /**
-     * Gets the value of createdBy.
-     * @return mixed
+     * Get createdBy
+     *
+     * @return integer
      */
-    public function getCreatedBy(){
+    public function getCreatedBy()
+    {
         return $this->createdBy;
     }
+
     /**
-     * Sets the value of createdBy.
-     * @param mixed $createdBy the created by
-     * @return self
+     * Set blocks
+     *
+     * @param string $blocks
+     *
+     * @return Map
      */
-    private function _setCreatedBy($createdBy){
-        $this->createdBy = $createdBy;
+    public function setBlocks($blocks)
+    {
+        $this->blocks = $blocks;
+
         return $this;
     }
+
     /**
-     * Gets the value of createdAt.
-     * @return mixed
+     * Get blocks
+     *
+     * @return string
      */
-    public function getCreatedAt(){
-        return $this->createdAt;
-    }
-    /**
-     * Sets the value of createdAt.
-     * @param mixed $createdAt the created at
-     * @return self
-     */
-    private function _setCreatedAt($createdAt){
-        $this->createdAt = $createdAt;
-        return $this;
+    public function getBlocks()
+    {
+        return $this->blocks;
     }
 }

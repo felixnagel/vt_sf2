@@ -2,11 +2,32 @@ imports:
     - { resource: parameters.yml }
     - { resource: security.yml }
     - { resource: services.yml }
+    - { resource: vt/base.yml }
+    - { resource: vt/block_definitions.yml }
+    - { resource: vt/brush_definitions.yml }
+    - { resource: vt/spritesheet_definitions.yml }
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: en
+
+monolog:
+    handlers:
+        filter_for_errors:
+            type: fingers_crossed
+            # if *one* log is error or higher, pass *all* to file_log
+            action_level: notice
+            handler: file_log        
+        
+        # this "file_log" key could be anything
+        file_log:
+            type: rotating_file
+            # log to var/logs/(environment).log
+            path: "%kernel.logs_dir%/%kernel.environment%.log"
+            # log *all* messages (debug is lowest level)
+            level: debug
+            max_files: 365
 
 framework:
     #esi:             ~

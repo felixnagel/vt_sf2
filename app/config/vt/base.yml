@@ -1,0 +1,16 @@
+parameters:
+  app.web_dir: %kernel.root_dir%/../web/
+
+  app.base:
+    ship:
+      x: 500
+      y: 500
+      rotation: 90
+      mass: 1
+      friction: 1
+      handling: 350 # degree per second
+      vMax: 1750 # px per second
+
+    grid:
+      edgeLengthRace: 400
+      edgeLengthEditor: 400

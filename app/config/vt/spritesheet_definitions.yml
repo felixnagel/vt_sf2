@@ -1,0 +1,67 @@
+parameters:
+  app.spritesheets:
+    start_1:
+      images: [images/spritesheets/start_1.png]
+      frames: 
+        width: 400
+        height: 400
+        count: 2
+      animations:
+        idle: 
+          frames: [0]
+          next:
+          speed: 0
+        pass:
+          frames: [1]
+          next:
+          speed: 1
+
+    checkpoint_1:
+      images: [images/spritesheets/checkpoint_1.png]
+      frames: 
+        width: 400
+        height: 400
+        count: 2
+      animations:
+        idle: 
+          frames: [0]
+          next:
+          speed: 0
+        pass:
+          frames: [1]
+          next:
+          speed: 1
+
+    ship:
+      images: [images/spritesheets/ship_1.png]
+      frames:
+        count: 5
+        height: 29
+        regX: 19
+        regY: 14
+        width: 38
+      animations:
+        idle:
+          frames: [0]
+          next:
+          speed:
+        straight:
+          frames: [0]
+          next:
+          speed:
+        straight_to_left:
+          frames: [1, 2]
+          next:
+          speed: 0.5
+        left_to_straight:
+          frames: [2, 1]
+          next: straight
+          speed: 0.5
+        straight_to_right:
+          frames: [3, 4]
+          next:
+          speed: 0.5
+        right_to_straight:
+          frames: [4, 3]
+          next: straight
+          speed: 0.5

@@ -1,0 +1,45 @@
+parameters:
+    app.blocks:
+        start_1:
+            ht: circle
+            role: objective
+            sprite: start_1
+            src: images/spritesheets/start_1.png
+            z: 2
+
+        checkpoint_1:
+            ht: circle
+            role: objective
+            sprite: checkpoint_1
+            src: images/spritesheets/checkpoint_1.png
+            z: 2
+
+        block_1:
+            ht: solid
+            role: terrain
+            src: images/blocks/block_1.png
+            z: 1
+
+        block_2:
+            ht: circleCurve
+            role: terrain
+            src: images/blocks/block_2.png
+            z: 1
+
+        block_3:
+            ht: constant
+            role: terrain
+            src: images/blocks/block_3.png
+            z: 1
+
+        clear_1:
+            role: clear_terrain
+            sprite: false
+            src: images/blocks/clear_terrain_1.png
+            z: 1
+
+        clear_2:
+            role: clear_terrain
+            sprite: false
+            src: images/blocks/clear_terrain_1.png
+            z: 2

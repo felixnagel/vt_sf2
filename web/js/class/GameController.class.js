@@ -1,0 +1,6 @@
+function GameController(){
+
+}
+GameController.prototype = {
+	
+}

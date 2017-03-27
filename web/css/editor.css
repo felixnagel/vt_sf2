@@ -1,0 +1,112 @@
+html{
+	height:100%;
+}
+body{
+	height:100%;
+}
+
+#brush-container{
+	height:50px;
+}
+#save-button{
+	position:absolute;
+	top:0;
+	left: 10px;
+	z-index:10;
+}
+#load-button{
+	position:absolute;
+	top:0;
+	left: 50px;
+	z-index:10;
+}
+#grid-container{
+	width:100%;
+	margin:auto;
+	height:75%;
+	background-color:#EFEFEF;
+	position:relative;
+	overflow:hidden;
+	z-index:1;
+}
+#grid-container *{
+	user-select: none;
+}
+#grid-outer{
+	position:absolute;
+	top:0;
+	left:0;
+	z-index:2;
+	padding:100px;
+	background-color:#EEEEEE;
+}
+#grid-inner{
+	background-color:#FFFFFF;
+	height:100%;
+	position:relative;
+	box-shadow:0px 0px 25px rgba(255, 255, 255, 1);
+	z-index:3;
+}
+#horizontal-scrollbar-container{
+	position:absolute;
+	bottom:0;
+	right:50px;
+	left:0;
+	height:50px;
+	background-color:rgba(255, 0, 0, 0.2);
+	z-index:4;
+	cursor:pointer;
+}
+#vertical-scrollbar-container{
+	position:absolute;
+	top:0;
+	right:0;
+	bottom:50px;
+	width:50px;
+	background-color:rgba(255, 0, 0, 0.2);
+	z-index:4;
+	cursor:pointer;
+}
+#horizontal-scrollbar-container > div,
+#vertical-scrollbar-container > div{
+	position:absolute;
+	top:0;
+	left:0;
+	height:50px;
+	width:50px;
+	background-color:rgba(0, 255, 0, 0.4);
+	z-index:5;
+	cursor:pointer;
+}
+
+
+#block-proto-container{
+	display:none;
+}
+
+#paint-brush-container{
+	opacity:0.8;
+	position:absolute;
+	top:0;
+	left:0;
+	display:none;
+	z-index:11;
+}
+
+.brush{
+	height:50px;
+	width:50px;
+	background-size:contain;
+}
+.brush.activated{
+	outline:1px solid red;
+}
+.block{
+	height:100px;
+	width:100px;
+	position:absolute;
+	top:0;
+	left:0;
+	background-size:contain;
+	background-repeat:no-repeat;
+}

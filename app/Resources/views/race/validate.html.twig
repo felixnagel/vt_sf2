@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+
+{% block stylesheets %}
+	<link rel="stylesheet" href="{{ asset('css/validate.css') }}" />
+{% endblock %}
+
+
+{% block body_tag %}
+	data-ajax_url_load_map="{{ path('validate/load', {map_id: iMapId}) }}"
+	data-block_definitions="{{ aBlockDefinitions|json_encode }}"
+    data-base_settings="{{ aBaseSettings|json_encode }}"
+	data-spritesheet_definitions="{{ aSpritesheetDefinitions|json_encode }}"
+	data-map_id="{{ iMapId }}"
+{% endblock %}
+
+{% block body %}
+
+	<canvas id="canvas-1" width="2500" height="1400" style="outline:1px solid #FF0000;"></canvas>
+
+{% endblock %}
+
+
+{% block javascripts %}
+    <script src="{{ asset('js/lib/easeljs-0.8.2.min.js') }}"></script>
+    <script src="{{ asset('js/lib/preloadjs-0.6.2.min.js') }}"></script>
+
+    <script src="{{ asset('js/class/AlphaBlock.class.js') }}"></script>
+    <script src="{{ asset('js/class/KeyController.class.js') }}"></script>
+    <script src="{{ asset('js/components/base.component.js') }}"></script>
+    
+    <script src="{{ asset('js/class/BlockData.class.js') }}"></script>
+    <script src="{{ asset('js/class/DisplayController.class.js') }}"></script>
+    <script src="{{ asset('js/class/VtKeyController.class.js') }}"></script>
+    <script src="{{ asset('js/class/Grid.class.js') }}"></script>
+    <script src="{{ asset('js/class/Ship.class.js') }}"></script>
+    <script src="{{ asset('js/class/TerrainBlock.class.js') }}"></script>
+
+    <script src="{{ asset('js/components/api.component.js') }}"></script>
+
+    <script src="{{ asset('js/controller/validate.js') }}"></script>
+{% endblock %}

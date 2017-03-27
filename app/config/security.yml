@@ -44,6 +44,8 @@ security:
 
     access_control:
         # require ROLE_ADMIN for /game*
-        - { path: ^/game, roles: ROLE_PLAYER }
+        - { path: ^/editor, roles: ROLE_PLAYER }
+        - { path: ^/validate, roles: ROLE_PLAYER }
+        - { path: ^/race, roles: ROLE_PLAYER }
         - { path: ^/signup, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
