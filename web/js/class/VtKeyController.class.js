@@ -2,31 +2,20 @@ function VtKeyController(){
 	'use strict'; 
 	var 
 		self = this,
-		bmArray = [
-			'RESTART',
-			'STEER_LEFT',
-			'STEER_RIGHT',
-			'THROTTLE',
-			'THRUST',
+
+		actionKeys = [
+			{actionId: 'raceRestart', keys: [13]},
+			{actionId: 'W', keys: [38, 87], keyUp: true},
+			{actionId: 'A', keys: [37, 65], keyUp: true},
+			{actionId: 'S', keys: [40, 83], keyUp: true},
+			{actionId: 'D', keys: [39, 68], keyUp: true}
 		];
 
-	for(var i = 0; i < bmArray.length; i++){
-		self.BM[bmArray[i]] = Math.pow(2, i);
+	for(var k = 0; k < actionKeys.length; k++){
+		var jDef = actionKeys[k];
+		self.register_key(jDef.actionId, jDef.keys, jDef);
+		self.BM[jDef.actionId] = Math.pow(2, k);
 	}
-
-	self.keyMappings = {
-		13: self.BM.RESTART,
-		37: self.BM.STEER_LEFT,
-		38: self.BM.THRUST,
-		39: self.BM.STEER_RIGHT,
-		40: self.BM.THROTTLE		
-	};
-
-	self.register_key(13, false, true, false);
-	self.register_key(37, false, true, true);
-	self.register_key(38, false, true, true);
-	self.register_key(39, false, true, true);
-	self.register_key(40, false, true, true);
 
 	window.onkeydown = function(event){
 		var keyCode = event.keyCode;
@@ -68,54 +57,67 @@ function VtKeyController(){
 VtKeyController.prototype = {
 	BM: {},
 	key_mask: 0,
-	keyMappings: {},
 	registeredKeys: {},
+	
 	update_mask: function update_mask(){
 		this.key_mask = 0;
 		for(var i in this.registeredKeys){
 			if(this.registeredKeys[i].isPressed){
-				this.key_mask |= this.keyMappings[i];
-			}else{
-				this.key_mask &= ~this.keyMappings[i];
+				this.key_mask |= this.BM[this.registeredKeys[i].actionId];
 			}
 		}
 	},
 	dispatch_event: function dispatch_event(){
 		var event = new Event('VtKeyController');
 		event.vt_actions = {
-			race_restart: (this.key_mask | this.BM.RESTART) == this.key_mask,
-
-			ship_steer_left: (this.key_mask & (this.BM.STEER_LEFT | this.BM.STEER_RIGHT)) == this.BM.STEER_LEFT,
-			ship_steer_right: (this.key_mask & (this.BM.STEER_LEFT | this.BM.STEER_RIGHT)) == this.BM.STEER_RIGHT,
-
-			ship_thrust: (this.key_mask & (this.BM.THRUST | this.BM.THROTTLE)) == this.BM.THRUST,
-			ship_throttle: (this.key_mask & (this.BM.THRUST | this.BM.THROTTLE)) == this.BM.THROTTLE
+			raceRestart: (this.key_mask | this.BM.raceRestart) == this.key_mask,
+			W: (this.key_mask & (this.BM.S | this.BM.W)) == this.BM.W,
+			A: (this.key_mask & (this.BM.A | this.BM.D)) == this.BM.A,
+			S: (this.key_mask & (this.BM.S | this.BM.W)) == this.BM.S,
+			D: (this.key_mask & (this.BM.A | this.BM.D)) == this.BM.D
 		};
 		window.dispatchEvent(event);
 	},
-	register_key: function register_key(keyCode, canRepeat, keyDown, keyUp){
-		this.registeredKeys[keyCode] = {
-			canRepeat: canRepeat || false,
-			keyDown: keyDown || true,
-			keyUp: keyUp || false,
-			isPressed: false,
-			isLocked: false
-		};
-	},
-	unregister_key: function unregister_key(keyCode){
-		delete this.registeredKeys[keyCode];
-	},
-	lockKey : function lockKey(keyCode){
-		this.controlsLocked[keyCode] = true;
-	},
-	unlockKey : function unlockKey(keyCode){
-		delete this.controlsLocked[keyCode];
-		if(this.isPressed(keyCode)){
-			this.keydown[keyCode]();
+	register_key: function register_key(actionId, aKeys, jDef){
+		for(var i = 0; i < aKeys.length; i++){
+			this.registeredKeys[aKeys[i]] = {
+				actionId: actionId,
+				canRepeat: false,
+				keyDown: true,
+				keyUp: false,
+				isPressed: false,
+				isLocked: false
+			};
+			for(var mOption in jDef){
+				if(this.registeredKeys[aKeys[i]][mOption] !== undefined){
+					this.registeredKeys[aKeys[i]][mOption] = jDef[mOption];
+				}
+			}
 		}
 	},
-	isPressed : function isPressed(keyCode){
-		return this.controlsPressed[keyCode] === true;
+	supress_actions: function supress_actions(aActionIds, bLiftKeys = true){
+		for(var iKey in this.registeredKeys){
+			for(var i = 0; i < aActionIds.length; i++){
+				if(this.registeredKeys[iKey].actionId === aActionIds[i]){
+					this.registeredKeys[iKey].isLocked = true;
+					if(bLiftKeys){
+						this.registeredKeys[iKey].isPressed = false;
+					}
+				}
+			}
+		}
+		if(bLiftKeys){
+			this.dispatch_event();
+		}
+	},
+	allow_actions: function allow_actions(aActionIds){
+		for(var iKey in this.registeredKeys){
+			for(var i = 0; i < aActionIds.length; i++){
+				if(this.registeredKeys[iKey].actionId === aActionIds[i]){
+					this.registeredKeys[iKey].isLocked = false;
+				}
+			}
+		}
 	}
 };
 

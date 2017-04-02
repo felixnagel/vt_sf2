@@ -183,5 +183,14 @@ Ship.prototype = {
 	},
 	is_steering_right: function is_steering_right(){
 		return this.steering > 0;
+	},
+	freeze: function freeze(){
+		this.steering = 0;
+		this.F_engine = 0;
+		this.vx = 0;
+		this.vy = 0;
+		this.vxRel = 0;
+		this.vyRel = 0;
+		this.vAbs = 0;
 	}
 };

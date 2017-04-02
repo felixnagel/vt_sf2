@@ -1,33 +1,33 @@
 parameters:
     app.blocks:
         start_1:
-            ht: circle
+            type: circle
             role: objective
             sprite: start_1
             src: images/spritesheets/start_1.png
             z: 2
 
         checkpoint_1:
-            ht: circle
+            type: circle
             role: objective
             sprite: checkpoint_1
             src: images/spritesheets/checkpoint_1.png
             z: 2
 
         block_1:
-            ht: solid
+            type: circleCurve
             role: terrain
             src: images/blocks/block_1.png
             z: 1
 
         block_2:
-            ht: circleCurve
+            type: circle
             role: terrain
             src: images/blocks/block_2.png
             z: 1
 
         block_3:
-            ht: constant
+            type: constant
             role: terrain
             src: images/blocks/block_3.png
             z: 1

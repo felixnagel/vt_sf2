@@ -1,6 +1,6 @@
-function BlockData(jBlockDefinitions, bZ){
+function BlockData(jBlockDefinitions){
 	this.jBlockDefinitions = jBlockDefinitions;
-	this.bZ = bZ;
+	this.layers = [];
 	this.content = {};
 };
 BlockData.prototype = {
@@ -21,18 +21,17 @@ BlockData.prototype = {
 			return undefined;
 		}
 	},
+	get_f3: function get_f3(x, y, z){
+		return this.content[x+this._D3+y+this._D3+z];
+	},
 	remove: function remove(jEssentials){
 		delete this.content[this.create_key(jEssentials)];
 	},
-	get2: function get2(x, y){
-		return this.content[x+this._D3+y];
+	remove_f3: function remove_f3(x, y, z){
+		delete this.content[x+this._D3+y+this._D3+z];
 	},
 	create_key: function create_key(jEssentials){
-		var result = jEssentials.x+this._D3+jEssentials.y;
-		if(this.bZ){
-			result += this._D3+this.jBlockDefinitions[jEssentials.id].z;
-		}
-		return result;
+		return jEssentials.x+this._D3+jEssentials.y+this._D3+this.jBlockDefinitions[jEssentials.id].z;
 	},
 	create_block_data: function create_block_data(jEssentials){
 		for(var key in this.jBlockDefinitions[jEssentials.id]){
@@ -62,6 +61,11 @@ BlockData.prototype = {
 			var 
 				jEssentials = this.decode_block_data(aBlocksData[i]),
 				jBlockData = this.create_block_data(jEssentials);
+
+			if(this.layers.indexOf(jBlockData.z) == -1){
+				this.layers.push(jBlockData.z);
+			}
+
 			this.content[this.create_key(jBlockData)] = jBlockData;
 		}
 	},

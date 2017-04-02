@@ -117,10 +117,10 @@ DisplayController.prototype = {
 			}
 		}
 	},
-	hide: function showInstance(sIId){
+	hide: function hide(sIId){
 		this.jInstances[sIId].visible = false;
 	},
-	show: function showInstance(sIId){
+	show: function show(sIId){
 		this.jInstances[sIId].visible = true;
 	},
 	sign: function sign(number){

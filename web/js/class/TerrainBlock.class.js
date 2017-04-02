@@ -2,12 +2,13 @@
 /**
 * Class TerrainBlock
 */
-function TerrainBlock(blockType, rot){
-	var options = {
-		htf : this.blockTypes[blockType],
-		edge : this.edge,
-		rot : rot
-	}
+function TerrainBlock(edge, blockType, rot){
+	var 
+		options = {
+			htf : this.blockTypes[blockType],
+			edge : edge,
+			rot : rot
+		};
 
 	this.type = blockType;
 

@@ -1,5 +1,16 @@
 parameters:
   app.spritesheets:
+    explosion:
+      images: [images/spritesheets/explosion1.png]
+      frames:
+        count: 25
+        height: 40
+        regX: 20
+        regY: 20
+        width: 40
+      animations:
+        explode: [0, 24, null, 0.75]
+
     start_1:
       images: [images/spritesheets/start_1.png]
       frames: 
