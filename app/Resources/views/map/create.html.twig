@@ -5,13 +5,11 @@
 	<link rel="stylesheet" href="{{ asset('css/editor.css') }}" />
 {% endblock %}
 
-
 {% block body_tag %}
-	data-ajax_url_load_map="{{ path('editor/load', {map_id: iMapId}) }}"
+	data-ajax_url_load_map="{{ path('editor/load') }}"
 	data-ajax_url_save_map="{{ path('editor/save') }}"
 	data-block_definitions="{{ aBlockDefinitions|json_encode }}"
 	data-brushes="{{ aBrushes|json_encode }}"
-	data-map_id="{{ iMapId }}"
 {% endblock %}
 
 {% block body %}

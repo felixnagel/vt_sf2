@@ -6,7 +6,6 @@ $(document).ready(function(){
 		_$body = $('body'),
 		
 		_BRUSHES = _$body.data('brushes'),
-		_MAP_ID = _$body.data('map_id'),
 		_GRIDSIZE = 100,
 		_MAPSIZE_X = 50,
 		_MAPSIZE_Y = 20,
@@ -196,7 +195,6 @@ $(document).ready(function(){
 					url: $('body').data('ajax_url_save_map'),
 					data: {
 						blocks: _BlockData.encode_box_data(_BlockData.content),
-						map_id: _MAP_ID,
 						title: 'test'
 					},
 					success: function(data){}

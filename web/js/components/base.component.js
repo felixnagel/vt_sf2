@@ -25,41 +25,5 @@ var
 				}
 			}
 		    return aUniqueArray;
-		},
-		formatTime: function formatTime(iTime, bShowSign){
-			var 
-				iSign = iTime < 0 ? -1 : 1,
-				sMinutes,
-				sSeconds,
-				sMilliSeconds,
-				sResult;
-
-			iTime *= iSign;
-
-			sMinutes = (Math.floor(iTime / 60000)).toString();
-			iTime -= 60000 * sMinutes;
-			if(sMinutes.length === 1){
-				sMinutes = '0' + sMinutes;
-			}
-			sMinutes = sMinutes + ':';
-
-			sSeconds = (Math.floor(iTime / 1000)).toString();
-			iTime -= 1000 * sSeconds;
-			if(sSeconds.length === 1){
-				sSeconds = '0' + sSeconds;
-			}
-			sSeconds = sSeconds + ':';
-
-			sMilliSeconds = (Math.floor(iTime / 10)).toString();
-			if(sMilliSeconds.length === 1){
-				sMilliSeconds = '0' + sMilliSeconds;
-			}
-
-			sResult = sMinutes + sSeconds + sMilliSeconds;
-			
-			if(bShowSign){
-				sResult = (iSign === -1 ? '-' : '+') + sResult;
-			}
-			return sResult;
 		}
 	};

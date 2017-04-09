@@ -1,7 +1,6 @@
 function DisplayController(oStage){'use strict'
 	this.oStage = oStage;
-	this.iCanvasWidth  = Math.round(this.oStage.canvas.offsetWidth);
-	this.iCanvasHeight = Math.round(this.oStage.canvas.offsetHeight);
+	this.update_canvas_dimensions();
 }
 DisplayController.prototype = {
 	// temp members
@@ -17,6 +16,10 @@ DisplayController.prototype = {
 	jInstances: {},
 	oStage: null,
 
+	update_canvas_dimensions: function update_canvas_dimensions(iZoom){
+		this.iCanvasWidth  = Math.round(this.oStage.canvas.offsetWidth/iZoom);
+		this.iCanvasHeight = Math.round(this.oStage.canvas.offsetHeight/iZoom);
+	},
 	add_container: function add_container(sCId, fParallaxF){
 		var oNewContainer = new createjs.Container();
 

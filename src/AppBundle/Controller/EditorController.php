@@ -29,13 +29,13 @@ class EditorController extends DefaultController implements AuthentificatedContr
     }
 
     /**
-     * @Route("/editor/load/{map_id}", name="editor/load")
+     * @Route("/editor/load", name="editor/load")
      */
-    public function loadAction($map_id){
+    public function loadAction(){
         $iUserId = $this->get('security.token_storage')->getToken()->getUser()->getId();
-
-        $oMap = $this->_load_map($map_id);
-
+        $iMapId = $this->_get_current_map();
+        
+        $oMap = $this->_load_map();
         if($oMap->getCreatedBy() != $iUserId){
             throw new \Exception(sprintf(
                 'Map createdBy differs from iUserId! | user_id[%s], map_id[%s]', $iUserId, $oMap->getId()
@@ -54,12 +54,11 @@ class EditorController extends DefaultController implements AuthentificatedContr
      * @Route("/editor/create/{map_id}", name="editor/create")
      */
     public function createAction($map_id){
-        $iMapId = $map_id;
+        $this->_set_current_map($map_id);
 
         $aTplData = [
             'aBlockDefinitions' => $this->container->getParameter('app.blocks'),
             'aBrushes' => $this->container->getParameter('app.brushes'),
-            'iMapId' => $iMapId,
         ];
 
         return $this->render('map/create.html.twig', $aTplData);
@@ -69,15 +68,8 @@ class EditorController extends DefaultController implements AuthentificatedContr
      * @Route("/editor/save", name="editor/save")
      */
     public function saveAction(Request $oRequest){
-        $map_id = $oRequest->get('map_id');
-        if(!is_numeric($map_id)){
-            $sMapId = serialize($map_id);
-            throw new \Exception(sprintf(
-                'No numeric value given for iMapId! | map_id[%s]', $sMapId
-            ));
-        }
-        $iMapId = (int)$map_id;
         $iUserId = $this->get('security.token_storage')->getToken()->getUser()->getId();
+        $iMapId = $this->_get_current_map();
 
         $oMap = $this->getDoctrine()->getRepository('AppBundle:Map')->findOneBy([
             'createdBy' => $iUserId,

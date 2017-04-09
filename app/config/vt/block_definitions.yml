@@ -2,14 +2,14 @@ parameters:
     app.blocks:
         start_1:
             type: circle
-            role: objective
+            role: starting_position
             sprite: start_1
             src: images/spritesheets/start_1.png
             z: 2
 
         checkpoint_1:
             type: circle
-            role: objective
+            role: checkpoint
             sprite: checkpoint_1
             src: images/spritesheets/checkpoint_1.png
             z: 2

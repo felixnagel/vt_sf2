@@ -4,11 +4,11 @@ function VtKeyController(){
 		self = this,
 
 		actionKeys = [
-			{actionId: 'raceRestart', keys: [13]},
 			{actionId: 'W', keys: [38, 87], keyUp: true},
 			{actionId: 'A', keys: [37, 65], keyUp: true},
 			{actionId: 'S', keys: [40, 83], keyUp: true},
-			{actionId: 'D', keys: [39, 68], keyUp: true}
+			{actionId: 'D', keys: [39, 68], keyUp: true},
+			{actionId: 'raceRestart', keys: [13]}
 		];
 
 	for(var k = 0; k < actionKeys.length; k++){
