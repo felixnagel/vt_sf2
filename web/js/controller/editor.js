@@ -5,13 +5,12 @@ $(document).ready(function(){
 		_$document = $(document),
 		_$body = $('body'),
 		
-		_BRUSHES = _$body.data('brushes'),
-		_GRIDSIZE = 100,
-		_MAPSIZE_X = 50,
-		_MAPSIZE_Y = 20,
+		_BRUSHES = _$body.data('jc_brushes'),
+		_BLOCKS = _$body.data('jc_blocks'),
+		_GRIDSIZE = _$body.data('jc_map').tiles.edge.editor,
 
 		_Grid = new Grid(_GRIDSIZE),
-		_BlockData = new BlockData(_$body.data('block_definitions'), true),
+		_BlockData = new BlockData(_BLOCKS, true),
 
 		_$blockProtos = $('#block-proto-container .block'),
 		_$brushes = $('#brush-container .brush'),
@@ -218,7 +217,6 @@ $(document).ready(function(){
 	// console.log(_GAME_SETTINGS);
 	_$brushes.on('click trouchstart', h.on_brush_click);
 
-	_$outerGrid.css({width: _MAPSIZE_X*_GRIDSIZE, height: _MAPSIZE_Y*_GRIDSIZE});
 	_$innerGrid.on('mouseenter trouchstart', h.on_mouseenter_grid);
 	_$innerGrid.on('mouseleave', h.on_mouseleave_grid);
 	_$innerGrid.on('mousemove trouchstart', h.on_mousemove_grid);

@@ -1,6 +1,5 @@
 {% extends 'base.html.twig' %}
 
-
 {% block stylesheets %}
 	<link rel="stylesheet" href="{{ asset('css/editor.css') }}" />
 {% endblock %}
@@ -8,8 +7,10 @@
 {% block body_tag %}
 	data-ajax_url_load_map="{{ path('editor/load') }}"
 	data-ajax_url_save_map="{{ path('editor/save') }}"
-	data-block_definitions="{{ aBlockDefinitions|json_encode }}"
-	data-brushes="{{ aBrushes|json_encode }}"
+	data-jc_blocks="{{ aC_blocks|json_encode }}"
+	data-jc_brushes="{{ aC_brushes|json_encode }}"
+	data-jc_dirs="{{ aC_dirs|json_encode }}"
+	data-jc_map="{{ aC_map|json_encode }}"
 {% endblock %}
 
 {% block body %}
@@ -17,7 +18,13 @@
 	<button id="load-button">Load</button>
 
 	<section id="grid-container">
-		<div id="grid-outer">
+		<div 
+			id="grid-outer"
+			style="
+				width:{{ aC_map.tiles.edge.editor*aC_map.tiles.count.x }}px;
+				height:{{ aC_map.tiles.edge.editor*aC_map.tiles.count.y }}px;
+			"
+		>
 			<section id="grid-inner">
 				<div id="paint-brush-container"></div>
 			</section>
@@ -31,12 +38,14 @@
 	</section>
 
 	<section id="block-proto-container">
-		{% for sBlockId, aBlock in aBlockDefinitions %}
+		{% for sBlockId, aBlock in aC_blocks %}
 	        <figure 
 	        	class="block"
 	        	style="
-	        		background-image:url({{ asset(aBlock.src) }});
-	        		z-index:{{ aBlock.z }};
+	        		background-image:url({{ asset(aC_dirs.blocks.face ~ sBlockId ~ '.png') }});
+	        		z-index:{% if aBlock.z is defined %}{{ aBlock.z }}{% else %}1{% endif %};
+					width:{{ aC_map.tiles.edge.editor }}px;
+					height:{{ aC_map.tiles.edge.editor }}px;
 	        	"
 	        	data-block_id="{{ sBlockId }}"
 	        	data-rotation="0"
@@ -45,7 +54,7 @@
 	</section>
 
 	<section id="brush-container">
-		{% for iBrushGroup, aBrushGroup in aBrushes %}
+		{% for iBrushGroup, aBrushGroup in aC_brushes %}
 			<section 
 				class="lnG lnG-tc-12"
 				data-group-id="{{ iBrushGroup }}"
@@ -54,7 +63,7 @@
 			        <div class="lnG-tile lnG-col">
 				        <figure
 				        	class="brush"
-				        	style="background-image:url({{ asset(aBrush.src) }})"
+				        	style="background-image:url({{ asset(aC_dirs.blocks.brush ~ aBrush.block_id ~ '.png') }})"
 				        	data-block_id="{{ aBrush.block_id }}"
 				        	data-rotation="0"
 				        ></figure>

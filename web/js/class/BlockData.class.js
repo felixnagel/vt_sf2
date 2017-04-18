@@ -6,7 +6,6 @@ function BlockData(jBlockDefinitions){
 BlockData.prototype = {
 	_D1: ':',
 	_D2: '|',
-	_D3: '_',
 
 	set: function set(jEssentials, jAdditionalData){
 		for(var key in jAdditionalData){
@@ -21,22 +20,26 @@ BlockData.prototype = {
 			return undefined;
 		}
 	},
-	get_f3: function get_f3(x, y, z){
-		return this.content[x+this._D3+y+this._D3+z];
+	get_by_xyz: function get_by_xyz(x, y, z){
+		return this.content[x+this._D2+y+this._D2+z];
 	},
 	remove: function remove(jEssentials){
 		delete this.content[this.create_key(jEssentials)];
 	},
-	remove_f3: function remove_f3(x, y, z){
-		delete this.content[x+this._D3+y+this._D3+z];
+	remove_by_xyz: function remove_by_xyz(x, y, z){
+		delete this.content[x+this._D2+y+this._D2+z];
+	},
+	get_z_index: function get_z_index(block_id){
+		return !isNaN(this.jBlockDefinitions[block_id].z) ? this.jBlockDefinitions[block_id].z : 1;
 	},
 	create_key: function create_key(jEssentials){
-		return jEssentials.x+this._D3+jEssentials.y+this._D3+this.jBlockDefinitions[jEssentials.id].z;
+		return jEssentials.x+this._D2+jEssentials.y+this._D2+this.get_z_index(jEssentials.id);
 	},
 	create_block_data: function create_block_data(jEssentials){
 		for(var key in this.jBlockDefinitions[jEssentials.id]){
 			jEssentials[key] = this.jBlockDefinitions[jEssentials.id][key];
 		}
+		jEssentials.z = this.get_z_index(jEssentials.id);
 		return jEssentials;
 	},
 	encode_box_data: function encode_box_data(jBlocksData){

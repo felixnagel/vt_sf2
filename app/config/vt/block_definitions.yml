@@ -1,45 +1,91 @@
 parameters:
     app.blocks:
+        clear_1:
+            role: clear_terrain
+
         start_1:
-            type: circle
             role: starting_position
             sprite: start_1
-            src: images/spritesheets/start_1.png
+            htf: e01
             z: 2
 
         checkpoint_1:
-            type: circle
             role: checkpoint
             sprite: checkpoint_1
-            src: images/spritesheets/checkpoint_1.png
+            htf: e01
             z: 2
 
-        block_1:
-            type: circleCurve
-            role: terrain
-            src: images/blocks/block_1.png
-            z: 1
-
-        block_2:
-            type: circle
-            role: terrain
-            src: images/blocks/block_2.png
-            z: 1
-
-        block_3:
-            type: constant
-            role: terrain
-            src: images/blocks/block_3.png
-            z: 1
-
-        clear_1:
-            role: clear_terrain
-            sprite: false
-            src: images/blocks/clear_terrain_1.png
-            z: 1
-
-        clear_2:
-            role: clear_terrain
-            sprite: false
-            src: images/blocks/clear_terrain_1.png
+        checkpoint_2:
+            role: checkpoint
+            sprite: checkpoint_2
+            htf: e01
             z: 2
+
+        checkpoint_3:
+            role: checkpoint
+            sprite: checkpoint_3
+            htf: e01
+            z: 2
+
+        e01:
+            role: terrain
+
+        e11:
+            role: terrain
+
+        e12:
+            role: terrain
+
+        e13:
+            role: terrain
+
+        e21:
+            role: terrain
+
+        e22:
+            role: terrain
+
+        e23:
+            role: terrain
+
+        c01:
+            role: terrain
+
+        c02:
+            role: terrain
+
+        c11:
+            role: terrain
+
+        c12:
+            role: terrain
+
+        c13:
+            role: terrain
+
+        c21:
+            role: terrain
+
+        c22:
+            role: terrain
+
+        c23:
+            role: terrain
+
+        s11:
+            role: terrain
+
+        s12:
+            role: terrain
+
+        s13:
+            role: terrain
+
+        s21:
+            role: terrain
+
+        s22:
+            role: terrain
+
+        s23:
+            role: terrain

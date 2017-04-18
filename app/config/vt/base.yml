@@ -1,16 +1,26 @@
 parameters:
-  app.web_dir: %kernel.root_dir%/../web/
+  app.base_urls:
+    blocks:
+      face: images/blocks/face/
+      stroke: images/blocks/stroke/
+      brush: images/blocks/brush/
+    spritesheets: images/spritesheets/
 
-  app.base:
-    ship:
-      x: 500
-      y: 500
-      rotation: 90
-      mass: 1
-      friction: 1
-      handling: 350 # degree per second
-      vMax: 1750 # px per second
+  app.map:
+    tiles:
+      count:
+        x: 20
+        y: 20
+      edge:
+        race: 400
+        editor: 200
+      stroke_oversize: 10
 
-    grid:
-      edgeLengthRace: 400
-      edgeLengthEditor: 400
+  app.ship:
+    mass: 1
+    friction: 1
+    handling: 350 # degree per second
+    v_max: 1500 # px per second
+
+
+# http://paletton.com/#uid=72W0u0kk8++7f+Wew+Zpz+WvHZJ

@@ -5,9 +5,8 @@ namespace AppBundle\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use LuckyNail\SimpleForms\Form;
-use Symfony\Component\Yaml\Yaml;
 use AppBundle\Entity\Map;
+use AppBundle\Entity\Times;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -57,8 +56,10 @@ class EditorController extends DefaultController implements AuthentificatedContr
         $this->_set_current_map($map_id);
 
         $aTplData = [
-            'aBlockDefinitions' => $this->container->getParameter('app.blocks'),
-            'aBrushes' => $this->container->getParameter('app.brushes'),
+            'aC_blocks' => $this->container->getParameter('app.blocks'),
+            'aC_brushes' => $this->container->getParameter('app.brushes'),
+            'aC_dirs' => $this->container->getParameter('app.base_urls'),
+            'aC_map' => $this->container->getParameter('app.map'),
         ];
 
         return $this->render('map/create.html.twig', $aTplData);
@@ -89,6 +90,13 @@ class EditorController extends DefaultController implements AuthentificatedContr
             ));
         }
         $sBlocks = (string)$blocks;
+        if($sBlocks !== $oMap->getBlocks()){
+            $oMap->setReleasedAt(null);
+            $oTimes = $this->_get_times();
+            $oTimes->setFinishTime(null);
+            $oTimes->setCheckpointTimes(null);
+            $oTimes->setCreatedAt(null);
+        }
         $oMap->setBlocks($sBlocks);
 
         $title = $oRequest->get('title');
@@ -104,6 +112,6 @@ class EditorController extends DefaultController implements AuthentificatedContr
         $oEm = $this->getDoctrine()->getManager();
         $oEm->flush();
 
-        return new JsonResponse('1');
+        return new JsonResponse();
     }
 }

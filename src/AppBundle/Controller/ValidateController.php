@@ -20,9 +20,11 @@ class ValidateController extends DefaultController implements AuthentificatedCon
         $this->_set_current_map($map_id);
 
         $aTplData = [
-            'aBaseSettings' => $this->container->getParameter('app.base'),
-            'aBlockDefinitions' => $this->container->getParameter('app.blocks'),
-            'aSpritesheetDefinitions' => $this->container->getParameter('app.spritesheets'),
+            'aC_blocks' => $this->container->getParameter('app.blocks'),
+            'aC_dirs' => $this->container->getParameter('app.base_urls'),
+            'aC_map' => $this->container->getParameter('app.map'),
+            'aC_ship' => $this->container->getParameter('app.ship'),
+            'aC_spritesheets' => $this->container->getParameter('app.spritesheets'),
         ];
 
         return $this->render('race/validate.html.twig', $aTplData);

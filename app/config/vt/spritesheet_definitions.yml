@@ -1,7 +1,7 @@
 parameters:
   app.spritesheets:
     explosion:
-      images: [images/spritesheets/explosion1.png]
+      images: [explosion1.png]
       frames:
         count: 25
         height: 40
@@ -12,10 +12,10 @@ parameters:
         explode: [0, 24, null, 0.75]
 
     start_1:
-      images: [images/spritesheets/start_1.png]
+      images: [start_1.png]
       frames: 
-        width: 400
-        height: 400
+        width: 500
+        height: 500
         count: 2
       animations:
         idle: 
@@ -28,10 +28,48 @@ parameters:
           speed: 1
 
     checkpoint_1:
-      images: [images/spritesheets/checkpoint_1.png]
+      images: [checkpoint_1.png]
       frames: 
-        width: 400
-        height: 400
+        width: 500
+        regX: 250
+        regY: 250
+        height: 500
+        count: 2
+      animations:
+        idle: 
+          frames: [0]
+          next:
+          speed: 0
+        pass:
+          frames: [1]
+          next:
+          speed: 1
+
+    checkpoint_2:
+      images: [checkpoint_2b.png]
+      frames: 
+        width: 500
+        regX: 250
+        regY: 250
+        height: 500
+        count: 2
+      animations:
+        idle: 
+          frames: [0]
+          next:
+          speed: 0
+        pass:
+          frames: [1]
+          next:
+          speed: 1
+
+    checkpoint_3:
+      images: [checkpoint_3.png]
+      frames: 
+        width: 500
+        regX: 250
+        regY: 250
+        height: 500
         count: 2
       animations:
         idle: 
@@ -44,7 +82,7 @@ parameters:
           speed: 1
 
     ship:
-      images: [images/spritesheets/ship_1.png]
+      images: [ship_1.png]
       frames:
         count: 5
         height: 29

@@ -3,14 +3,14 @@ function Ship(settings){
 	 * whitelist settings keys
 	 */
 	var settingsKeys = [
-		'blackboxEnabled',
+		'blackbox_enabled',
 		'F_0x',
 		'F_0y',
 		'friction',
 		'handling',
 		'mass',
 		'rotation',
-		'vMax',
+		'v_max',
 		'vx',
 		'vy',
 		'x',
@@ -32,10 +32,10 @@ function Ship(settings){
 	this.friction /= 1000;
 
 	/**
-	 * if user decided to specify vMax, calculate engine power according to that value
+	 * if user decided to specify v_max, calculate engine power according to that value
 	 */
-	if(this.vMax){
-		this.powerEngine = Math.pow(this.vMax, 2) * this.friction;
+	if(this.v_max){
+		this.powerEngine = Math.pow(this.v_max, 2) * this.friction;
 		this.powerBrakes = 0.5*this.powerEngine;
 	}
 }
@@ -44,7 +44,7 @@ Ship.prototype = {
 	/**
 	 * settings
 	 */
-	blackboxEnabled : true,
+	blackbox_enabled : true,
 	F_0x            : 0,
 	F_0y            : 0,
 	friction        : 0,
@@ -53,7 +53,7 @@ Ship.prototype = {
 	mass            : 0,
 	powerBrakes     : 0,
 	powerEngine     : 0,
-	vMax            : 0,
+	v_max            : 0,
 
 	/**
 	 * values
@@ -143,8 +143,8 @@ Ship.prototype = {
 		 */
 		this.vx    += dt * (this._F_ex + this.F_0x + this._F_fx) / this.mass;
 		this.vy    += dt * (this._F_ey + this.F_0y + this._F_fy) / this.mass;
-		this.vxRel = this.vx / this.vMax;
-		this.vyRel = this.vy / this.vMax;
+		this.vxRel = this.vx / this.v_max;
+		this.vyRel = this.vy / this.v_max;
 		this.vAbs  = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
 
 		/**
@@ -156,7 +156,7 @@ Ship.prototype = {
 		/**
 		 * write to blackbox, if enabled
 		 */
-		if(this.blackboxEnabled){
+		if(this.blackbox_enabled){
 			this.blackboxWrite();
 		}
 	},

@@ -28,34 +28,5 @@ Grid.prototype = {
 	* @return undefined
 	*/
 	/*
-	plot : function plot(canvasId){
-		//the canvas to print this block (debug)
-		var canvas = document.getElementById(canvasId),
-			ctx = canvas.getContext('2d');
-
-		//loop columns
-		for(var xGrid = 0; xGrid < this.width; ++xGrid){
-			//loop rows
-			for(var yGrid = 0; yGrid < this.height; ++yGrid){
-				var block = this.getContent(xGrid, yGrid, categoryKey);
-				//loop width
-				if(block){
-					for(var xRel = 0; xRel < this.grating; ++xRel){
-						//loop height
-						for(var yRel = 0; yRel < this.grating; ++yRel){
-							if(block.hittest(xRel, yRel)){
-								ctx.fillRect(xRel + xGrid * this.grating, yRel + yGrid * this.grating, 1, 1);
-							}
-						}
-					}
-				}
-			}
-		}
-
-		if(imgId){
-			document.getElementById(imgId).src = this.canvas.toDataURL();
-		}
-
-	}
 	*/
 };

@@ -5,9 +5,8 @@ function DisplayController(oStage){'use strict'
 DisplayController.prototype = {
 	// temp members
 	_i: null,
-	_iMOVF: 0.4,
+	_iMOVF: 0.0,
 	// basic members
-	aRepeatingInstances: [],
 	aRepeatingInstances: [],
 	iCanvasHeight: null,
 	iCanvasWidth: null,
@@ -44,7 +43,7 @@ DisplayController.prototype = {
 			star = new createjs.Shape(),
 			r = iRMax*Math.random()*Math.random()*Math.random()*Math.random() + 1;
 
-			star.graphics.beginFill('#fff').drawCircle(0, 0, r);
+			star.graphics.beginFill('#EEE').drawCircle(0, 0, r);
 
 			sIId = 'repeating_instance_' + i + '_' + sCId;
 			this.add_instance(star, sIId, sCId);
@@ -86,15 +85,20 @@ DisplayController.prototype = {
 		this.jContainers[sCId].addChild(oNewInstance);
 		this.jInstances[sIId] = oNewInstance;
 	},
-	position_instance: function position_instance(sIId, iNewX, iNewY, new_rotation){
+	position_instance: function position_instance(sIId, iNewX, iNewY, iNewRot, iNewOversize){
 		if(!isNaN(iNewX)){
 			this.jInstances[sIId].x = (this.jInstances[sIId].fParallaxF * iNewX) >> 0;
 		}
 		if(!isNaN(iNewY)){
 			this.jInstances[sIId].y = (this.jInstances[sIId].fParallaxF * iNewY) >> 0;
 		}
-		if(!isNaN(new_rotation)){
-			this.jInstances[sIId].rotation = new_rotation >> 0;
+		if(!isNaN(iNewRot)){
+			this.jInstances[sIId].rotation = iNewRot >> 0;
+		}
+		if(!isNaN(iNewOversize)){
+			var iRad = this.to_rad(iNewRot);
+			this.jInstances[sIId].x -= iNewOversize*Math.cos(iRad) - iNewOversize*Math.sin(iRad) >> 0;
+			this.jInstances[sIId].y -= iNewOversize*Math.sin(iRad) + iNewOversize*Math.cos(iRad) >> 0;
 		}
 	},
 	focus_instance: function focus_instance(sCId, sIId){
@@ -102,8 +106,8 @@ DisplayController.prototype = {
 		this.jContainers[sCId].y = (0.5*this.iCanvasHeight - this.jContainers[sCId].fParallaxF*(this.jInstances[sIId].y/this.jInstances[sIId].fParallaxF)) >> 0;
 	},
 	set_movement_offset: function set_movement_offset(sCId, vx_rel, vy_rel){
-		this.jContainers[sCId].x += (this.jContainers[sCId].fParallaxF*(-Math.pow(Math.sin(vx_rel * this._iMOVF*0.5*Math.PI), 2) * this.sign(vx_rel) * 0.5*this.iCanvasWidth)) >> 0;
-		this.jContainers[sCId].y += (this.jContainers[sCId].fParallaxF*(-Math.pow(Math.sin(vy_rel * this._iMOVF*0.5*Math.PI), 2) * this.sign(vy_rel) * 0.5*this.iCanvasHeight)) >> 0;
+		this.jContainers[sCId].x += (-Math.pow(Math.sin(vx_rel * this._iMOVF*0.5*Math.PI), 2) * this.sign(vx_rel) * 0.5*this.iCanvasWidth) >> 0;
+		this.jContainers[sCId].y += (-Math.pow(Math.sin(vy_rel * this._iMOVF*0.5*Math.PI), 2) * this.sign(vy_rel) * 0.5*this.iCanvasHeight) >> 0;
 	},
 	/**
 	 * play spritesheet animation with an optional offset of frames
@@ -128,6 +132,9 @@ DisplayController.prototype = {
 	},
 	sign: function sign(number){
 		return number < 0 ? -1 : 1;
+	},
+	to_rad: function to_rad(iRot){
+		return iRot * Math.PI / 180;
 	}
 };
 

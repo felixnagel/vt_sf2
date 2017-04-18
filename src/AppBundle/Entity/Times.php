@@ -20,7 +20,7 @@ class Times{
 	 */
 	private $mapId;
 	/**
-	 * @ORM\Column(type="datetime")
+	 * @ORM\Column(type="datetime", nullable=true)
 	 */
 	private $createdAt;
 	/**
@@ -28,11 +28,11 @@ class Times{
 	 */
 	private $playerId;
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      */
     private $finishTime;
 	/**
-	 * @ORM\Column(type="text")
+	 * @ORM\Column(type="text", nullable=true)
 	 */
 	private $checkpointTimes;
 
