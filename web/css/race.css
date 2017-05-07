@@ -12,9 +12,17 @@ html, body{
 	position:absolute;
 	top:0;
 	left:0;
+	will-change:transform;
 }
-#map{
+#map-container{
 	position:absolute;
 	top:0;
 	left:0;
+	will-change:transform;
+}
+#bg{
+	position:absolute;
+	top:0;
+	left:0;
+	will-change:transform;	
 }

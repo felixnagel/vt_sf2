@@ -2,7 +2,7 @@ parameters:
   app.brushes:
   -
     -
-      block_id: clear_1
+      block_id: clear_2
       filename: clear_terrain_1.png
 
     -
@@ -22,6 +22,10 @@ parameters:
       filename: checkpoint_3.png
 
   -
+    -
+      block_id: clear_1
+      filename: clear_terrain_1.png
+
     -
       block_id: e01    
       filename: e01.png

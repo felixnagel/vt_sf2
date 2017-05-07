@@ -27,7 +27,8 @@ class ValidateController extends DefaultController implements AuthentificatedCon
             'aC_spritesheets' => $this->container->getParameter('app.spritesheets'),
         ];
 
-        return $this->render('race/validate.html.twig', $aTplData);
+        //return $this->render('race/validate.html.twig', $aTplData);
+        return $this->render('race/race.html.twig', $aTplData);
     }
     /**
      * @Route("/validate/submit", name="validate/submit")

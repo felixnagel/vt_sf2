@@ -44,7 +44,7 @@ Ship.prototype = {
 	/**
 	 * settings
 	 */
-	blackbox_enabled : true,
+	blackbox_enabled : false,
 	F_0x            : 0,
 	F_0y            : 0,
 	friction        : 0,

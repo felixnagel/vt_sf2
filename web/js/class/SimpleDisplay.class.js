@@ -1,10 +1,18 @@
-function DisplayController(oStage){'use strict'
-	this.oStage = oStage;
+function SimpleDisplay(settings){
+	this.iWidth = settings.iWidth;
+	this.iHeight = settings.iHeight;
+
+	this.oCanvas = document.createElement('canvas');
+	this.oCanvas.style.position = 'absolute';
+	this.oCanvas.width = this.iWidth;
+	this.oCanvas.height = this.iHeight;
+	this.oStage = new createjs.Stage(this.oCanvas);
+	document.getElementById(settings.sParentId).appendChild(this.oCanvas);
 }
-DisplayController.prototype = {
+
+SimpleDisplay.prototype = {
 	// temp members
 	_i: null,
-	_iMOVF: 0.5,
 	// basic members
 	aRepeatingInstances: [],
 	iCanvasHeight: null,
@@ -12,7 +20,13 @@ DisplayController.prototype = {
 	iRepeatingThreshold: 0.1,
 	jContainers: {},
 	jInstances: {},
+	oCanvas: null,
 	oStage: null,
+
+	position: function position(x, y){
+		this.oCanvas.style.top = (y>>0)+'px';
+		this.oCanvas.style.left = (x>>0)+'px';
+	},
 
 	add_container: function add_container(sCId, fParallaxF){
 		var oNewContainer = new createjs.Container();

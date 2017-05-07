@@ -3,6 +3,10 @@ parameters:
         clear_1:
             role: clear_terrain
 
+        clear_2:
+            role: clear_terrain
+            z: 2
+
         start_1:
             role: starting_position
             sprite: start_1
