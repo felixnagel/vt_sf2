@@ -37,6 +37,10 @@ $(document).ready(function(){
 		_iTimeStart = 0,
 		_iTimeCount = 0,
 
+		_oTimeTmp = +new Date,
+		_oLastFrame = +new Date,
+
+
 	VAR_END;
 
 
@@ -49,7 +53,7 @@ $(document).ready(function(){
 				_$document.on('map_loaded', h.on_map_loaded);
 				_$document.on('map_drawn', h.on_map_drawn);
 				m.prepare_spritesheet_definitions();
-				createjs.Ticker.addEventListener('tick', h.on_tick);
+				//createjs.Ticker.addEventListener('tick', h.on_tick);
 				window.addEventListener('VtKeyController', h.on_key_controller);
 				_$document.on('checkpoint_reached', h.on_checkpoint_reached);
 				_$document.on('race_restart', h.on_race_restart);
@@ -119,9 +123,6 @@ $(document).ready(function(){
 				_ShipDisplay.hide('explosion');
 			},
 
-			tick2: function tick2(event){
-			},
-
 			add_terrain_block_objects: function add_terrain_block_objects(){
 				var jBlockData;
 				for(var sBlockKey in _BlockData.content){
@@ -183,6 +184,12 @@ $(document).ready(function(){
 
 			transfer_terrain_blocks_to_img: function transfer_terrain_blocks_to_img(){
 				_$imgBg.attr('src', _$canvasBg[0].toDataURL());
+			},
+
+			tick: function tick(){
+				_oTimeTmp = +new Date - _oLastFrame;
+				requestAnimationFrame(h.on_tick);
+				_oLastFrame = +new Date;
 			}
 		},
 		h = {
@@ -248,10 +255,14 @@ $(document).ready(function(){
 				//m.setup_checkpoints();
 
 				
-				
+				setInterval(m.tick, 1000/120);
+
+
+				/*
 				createjs.Ticker.useRAF = true;
 				createjs.Ticker.setFPS(60);
-				
+				*/
+
 
 				_$document.trigger('map_drawn');
 			},
@@ -268,19 +279,21 @@ $(document).ready(function(){
 				m.start_race();
 			},
 
-			on_tick: function on_tick(event){
-				//console.time('tick');
+			on_tick: function on_tick(){
+				
 				if(_RACING){
-					_Ship.move(0.001*event.delta);
+					
+					_Ship.move(0.001*_oTimeTmp);
+
 					m.update_camera();
 					m.perform_hittest();
-					_Clock.tick(event.delta);
+					//_Clock.tick(_oTimeTmp);
 					_$clock.html(_Clock.get_formatted_time());
 				}
-				if(_RENDERING){
-				}
-				$DEBUG.html(Math.round(createjs.Ticker.getMeasuredFPS()));
-				//console.timeEnd('tick');
+				if(_RENDERING){}
+				$DEBUG.html(Math.round(1000/_oTimeTmp));
+
+				
 			},
 			on_block_hit: function on_block_hit(event, jEventData){
 				var 

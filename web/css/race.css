@@ -13,16 +13,19 @@ html, body{
 	top:0;
 	left:0;
 	will-change:transform;
+	transform: translateZ(0);
 }
 #map-container{
 	position:absolute;
 	top:0;
 	left:0;
 	will-change:transform;
+	transform: translateZ(0);
 }
 #bg{
 	position:absolute;
 	top:0;
 	left:0;
-	will-change:transform;	
+	will-change:transform;
+	transform: translateZ(0);
 }
