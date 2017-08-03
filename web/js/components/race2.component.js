@@ -24,6 +24,7 @@ $(document).ready(function(){
 		_BlockData = new BlockData(_BLOCKS),
 		_MapDisplay,
 		_ShipDisplay,
+		_ColorProjector,
 
 		_sLoadedBlockData,
 		_aCheckpoints = [],
@@ -49,7 +50,6 @@ $(document).ready(function(){
 	var
 		m = {
 			init: function inint(){
-				console.log('ok');
 				_$document.on('map_loaded', h.on_map_loaded);
 				_$document.on('map_drawn', h.on_map_drawn);
 				m.prepare_spritesheet_definitions();
@@ -150,6 +150,8 @@ $(document).ready(function(){
 				_ShipDisplay.position_instance('ship', undefined, undefined, _Ship.rotation);
 				_ShipDisplay.oStage.update();
 				_MapDisplay.update_camera(_Ship.x, _Ship.y, _Ship.vxRel, _Ship.vyRel);
+				_$gameCanvas[0].style.backgroundColor = 'rgb('+_ColorProjector.get_rgb(_Ship.vxRel, _Ship.vyRel)+')';
+				
 			},
 
 			perform_hittest: function perform_hittest(){
@@ -233,6 +235,8 @@ $(document).ready(function(){
 			on_map_loaded: function on_map_loaded(event, jBlocks){
 				_sLoadedBlockData = jBlocks.sBlocks;
 				_BlockData.decode_box_data(_sLoadedBlockData);
+
+				_ColorProjector = new ColorProjector({});
 
 				_MapDisplay = new Map({
 					iStrokeOversize: _MAP.tiles.stroke_oversize,

@@ -21,7 +21,8 @@
 {% block body %}
     <div id="game-canvas"> 
         <span id="debug" style="position:absolute; top:0; left:0; color:red; z-index:100;"></span>
-        <img id="bg" src="{{ asset('images/bg_space_2.jpg') }}" style="" />
+        <div id="spotlight"></div>
+        {#<img id="bg" src="{{ asset('images/bg_space_2.jpg') }}" style="" />#}
         <div id="camera-container">
             <div id="map-container">
                 <img src="" alt="" id="map" />
@@ -48,6 +49,7 @@
     <script src="{{ asset('js/class/Ship.class.js') }}"></script>
     <script src="{{ asset('js/class/Map.class.js') }}"></script>
     <script src="{{ asset('js/class/SimpleDisplay.class.js') }}"></script>
+    <script src="{{ asset('js/class/ColorProjector.class.js') }}"></script>
 
     <script src="{{ asset('js/controller/race.js') }}"></script>
 {% endblock %}

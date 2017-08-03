@@ -10,7 +10,7 @@ function Map(settings){
 	this.oGameCanvas = settings.oGameCanvas;
 	this.oMapContainer = settings.oMapContainer;
 	this.oCameraContainer = settings.oCameraContainer;
-	this.oBg = settings.oBg;
+	this.oSpotlight = document.getElementById('spotlight');
 
 	this.update_viewport();
 }
@@ -32,6 +32,7 @@ Map.prototype = {
 		var 
 			self = this,
 			oCanvas = document.createElement('canvas'),
+			ctx = oCanvas.getContext('2d'),
 			oStage = new createjs.Stage(oCanvas),
 			iCanvasX = 0,
 			iCanvasY = 0;
@@ -48,7 +49,6 @@ Map.prototype = {
 		oCanvas.width = (iCanvasX+1)*this.iTilesize + this.iStrokeOversize;
 		oCanvas.height = (iCanvasY+1)*this.iTilesize + this.iStrokeOversize;
 
-		/*
 		for(var i in this.jBlockData.content){
 			var oBitmap = new createjs.Bitmap(self._jQ[this.jBlockData.content[i].id].stroke);
 			oBitmap.regX = 0.5*oBitmap.image.width;
@@ -58,7 +58,7 @@ Map.prototype = {
 			oBitmap.rotation = this.jBlockData.content[i].r >> 0;
 			oStage.addChild(oBitmap);
 		}
-		*/
+		oStage.update();
 
 		for(var i in this.jBlockData.content){
 			var oBitmap = new createjs.Bitmap(self._jQ[this.jBlockData.content[i].id].face);
@@ -70,7 +70,6 @@ Map.prototype = {
 			oStage.addChild(oBitmap);
 		}
 
-
 		oStage.update();
 		this.oImg.src = oCanvas.toDataURL('image/png');
 	},
@@ -78,14 +77,20 @@ Map.prototype = {
 
 
 	update_camera: function update_camera(x, y, vxRel, vyRel){
+
 		/*
 		this.oMapContainer.style.left = ((0.5*this.iViewportWidth - x) >> 0) + 'px';
 		this.oMapContainer.style.top = ((0.5*this.iViewportHeight - y) >> 0) + 'px';
 		this.oCameraContainer.style.left = ((-Math.pow(Math.sin(vxRel*this._iMOVF*0.5*Math.PI), 2)*this.sign(vxRel)*0.5*this.iViewportWidth) >> 0) + 'px';
 		this.oCameraContainer.style.top = ((-Math.pow(Math.sin(vyRel*this._iMOVF*0.5*Math.PI), 2)*this.sign(vyRel)*0.5*this.iViewportHeight) >> 0) + 'px';
 		*/
+		//((vxRel+vyRel)*255)>>0
+		/*
+		var color1 = ((Math.abs(vxRel)+Math.abs(vyRel))*255)>>0;
+		var color2 = 255-color1;
+		*/
 
-		this.oBg.style.transform = 'translate('+ ((-x/5) >> 0) + 'px, '+ ((- y/5) >> 0) +'px)';
+
 		this.oMapContainer.style.transform = 'translate('+ ((0.5*this.iViewportWidth - x) >> 0) + 'px, '+ ((0.5*this.iViewportHeight - y) >> 0) +'px)';
 		this.oCameraContainer.style.transform = 'translate('+ ((-Math.pow(Math.sin(vxRel*this._iMOVF*0.5*Math.PI), 2)*this.sign(vxRel)*0.5*this.iViewportWidth) >> 0) + 'px, '+ ((-Math.pow(Math.sin(vyRel*this._iMOVF*0.5*Math.PI), 2)*this.sign(vyRel)*0.5*this.iViewportHeight) >> 0) +'px)';
 	},
