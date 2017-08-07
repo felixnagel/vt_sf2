@@ -99,3 +99,45 @@ ColorProjector.prototype = {
 		*/
 	}
 };
+
+
+
+/*
+		var $w = $('#test');
+		var $testColor = $('#test-color');
+
+		var rotX = function rotX(x, y, alpha){
+			return x*Math.cos(alpha) - y*Math.sin(alpha)
+		};
+		var rotY = function rotY(x, y, alpha){
+			return x*Math.sin(alpha) + y*Math.cos(alpha);
+		};
+		var getF = function getF(x, y, alpha){
+			var phi = Math.atan2(rotY(x, y, alpha), rotX(x, y, alpha));
+			var f = 0;
+			if(phi < 2/3*Math.PI && phi > -2/3*Math.PI){
+				f = Math.cos(phi*3/4);
+			}
+			f *= Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+			return f;
+		};
+
+		var getR = function getR(x, y){
+			var alpha = 0*Math.PI;
+			return 255-255*getF(x, y, alpha)>>0;
+		};
+		var getG = function getG(x, y){
+			var alpha = -2/3*Math.PI;
+			return 255-255*getF(x, y, alpha)>>0;
+		};
+		var getB = function getB(x, y){
+			var alpha = -4/3*Math.PI;
+			return 255-255*getF(x, y, alpha)>>0;
+		};
+
+		$w.on('mousemove', function(event){
+			var x = (event.offsetX - 100) / 100;
+			var y = (event.offsetY - 100) / 100;
+			$testColor[0].style.backgroundColor = 'rgb('+getR(x, y)+','+getG(x, y)+','+getB(x, y)+')';
+		});
+*/
