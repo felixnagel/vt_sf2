@@ -103,8 +103,18 @@ ColorProjector.prototype = {
 
 
 /*
+<div id="test" style="width:200px; height:200px; border:1px solid red; position:relative">
+	<div style="position:absolute; top:99px; left:99px; right:99px; bottom:99px; background-color:red"></div>
+</div>
+<div id="test-color" style="margin-top:10px; height:500px; width:100%; border:1px solid red;">
+	<p id="test-color2" style="font-size:400px; text-shadow:10px 10px 0px rgba(0, 0, 0, 0.2);">FOOBAR FOOBAR</p>
+</div>
+
+{literal}<script type="text/javascript">
+	$(document).ready(function(){ 'use strict';
 		var $w = $('#test');
 		var $testColor = $('#test-color');
+		var $testColor2 = $('#test-color2');
 
 		var rotX = function rotX(x, y, alpha){
 			return x*Math.cos(alpha) - y*Math.sin(alpha)
@@ -124,14 +134,17 @@ ColorProjector.prototype = {
 
 		var getR = function getR(x, y){
 			var alpha = 0*Math.PI;
+			//return 255*getF(x, y, alpha)>>0;
 			return 255-255*getF(x, y, alpha)>>0;
 		};
 		var getG = function getG(x, y){
 			var alpha = -2/3*Math.PI;
+			//return 255*getF(x, y, alpha)>>0;
 			return 255-255*getF(x, y, alpha)>>0;
 		};
 		var getB = function getB(x, y){
 			var alpha = -4/3*Math.PI;
+			//return 255*getF(x, y, alpha)>>0;
 			return 255-255*getF(x, y, alpha)>>0;
 		};
 
@@ -139,5 +152,11 @@ ColorProjector.prototype = {
 			var x = (event.offsetX - 100) / 100;
 			var y = (event.offsetY - 100) / 100;
 			$testColor[0].style.backgroundColor = 'rgb('+getR(x, y)+','+getG(x, y)+','+getB(x, y)+')';
+			$testColor2[0].style.color = 'rgb('+getR(x, y)+','+getG(x, y)+','+getB(x, y)+')';
+			$testColor2[0].style.textShadow = 20*rotX(x, y, Math.PI)+'px '+20*rotY(x, y, Math.PI)+'px 2px rgba(0, 0, 0, 0.3)';
+			$testColor2[0].style.transform = 'rotateX('+y*-15+'deg)' + ' ' + 'rotateY('+x*15+'deg)';
+			
 		});
+	});
+</script>{/literal}
 */
