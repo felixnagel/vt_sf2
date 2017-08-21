@@ -20,6 +20,9 @@ BlockData.prototype = {
 			return undefined;
 		}
 	},
+	get_by_xy_role: function get_by_xy_role(x, y, sRole){
+		return this.content[x+this._D2+y+this._D2+this.get_z_by_role(sRole)];
+	},
 	get_by_xyz: function get_by_xyz(x, y, z){
 		return this.content[x+this._D2+y+this._D2+z];
 	},
@@ -29,17 +32,34 @@ BlockData.prototype = {
 	remove_by_xyz: function remove_by_xyz(x, y, z){
 		delete this.content[x+this._D2+y+this._D2+z];
 	},
-	get_z_index: function get_z_index(block_id){
-		return !isNaN(this.jBlockDefinitions[block_id].z) ? this.jBlockDefinitions[block_id].z : 1;
+	get_z_by_role: function get_z_by_role(sRole){
+		if(sRole === 'terrain'){
+			return 1;
+		}
+		if(sRole === 'clear_terrain_1'){
+			return 1;
+		}
+		if(sRole === 'checkpoint'){
+			return 2;
+		}
+		if(sRole === 'starting_position'){
+			return 2;
+		}
+		if(sRole === 'clear_terrain_2'){
+			return 2;
+		}
+	},
+	get_z_by_id: function get_z_by_id(block_id){
+		return this.get_z_by_role(this.jBlockDefinitions[block_id].role);
 	},
 	create_key: function create_key(jEssentials){
-		return jEssentials.x+this._D2+jEssentials.y+this._D2+this.get_z_index(jEssentials.id);
+		return jEssentials.x+this._D2+jEssentials.y+this._D2+this.get_z_by_id(jEssentials.id);
 	},
 	create_block_data: function create_block_data(jEssentials){
 		for(var key in this.jBlockDefinitions[jEssentials.id]){
 			jEssentials[key] = this.jBlockDefinitions[jEssentials.id][key];
 		}
-		jEssentials.z = this.get_z_index(jEssentials.id);
+		jEssentials.z = this.get_z_by_id(jEssentials.id);
 		return jEssentials;
 	},
 	encode_box_data: function encode_box_data(jBlocksData){

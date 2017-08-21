@@ -1,35 +1,20 @@
 parameters:
     app.blocks:
         clear_1:
-            role: clear_terrain
+            role: clear_terrain_1
 
         clear_2:
-            role: clear_terrain
-            z: 2
+            role: clear_terrain_2
 
         start_1:
             role: starting_position
             sprite: start_1
             htf: e01
-            z: 2
 
-        checkpoint_1:
+        cp1:
             role: checkpoint
-            sprite: checkpoint_1
+            sprite: cp1
             htf: e01
-            z: 2
-
-        checkpoint_2:
-            role: checkpoint
-            sprite: checkpoint_2
-            htf: e01
-            z: 2
-
-        checkpoint_3:
-            role: checkpoint
-            sprite: checkpoint_3
-            htf: e01
-            z: 2
 
         e01:
             role: terrain

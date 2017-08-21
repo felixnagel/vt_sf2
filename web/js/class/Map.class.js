@@ -1,21 +1,13 @@
 function Map(settings){
 	this.jBlockData = settings.jBlockData;
 	this.iTilesize = settings.iTilesize;
-	this.iStrokeOversize = settings.iStrokeOversize;
 	this.sFaceUrl = settings.sFaceUrl;
-	this.sSpritesheets = settings.sSpritesheets;
-	this.sSpritesheetUrl = settings.sSpritesheetUrl;
 	this.sStrokeUrl = settings.sStrokeUrl;
-	this.oImg = settings.oImg;
-	this.oGameCanvas = settings.oGameCanvas;
-	this.oMapContainer = settings.oMapContainer;
-	this.oCameraContainer = settings.oCameraContainer;
-	this.oSpotlight = document.getElementById('spotlight');
-
-	this.update_viewport();
+	this.iStrokeOversize = settings.iStrokeOversize;
 }
 
 Map.prototype = {
+	_oImg: null,
 	_jQ: {},
 	_iFaceEdge: null,
 	_iStrokeEdge: null,
@@ -23,9 +15,9 @@ Map.prototype = {
 	_bFacesLoaded: false,
 	_iMOVF: 0.4,
 
-	update_viewport: function update_viewport(){
-		this.iViewportWidth = this.oGameCanvas.clientWidth;
-		this.iViewportHeight = this.oGameCanvas.clientHeight;
+	update_viewport: function update_viewport(oGameCanvas){
+		this.iViewportWidth = oGameCanvas.clientWidth;
+		this.iViewportHeight = oGameCanvas.clientHeight;
 	},
 
 	draw_on_canvas: function draw_on_canvas(){
@@ -49,6 +41,7 @@ Map.prototype = {
 		oCanvas.width = (iCanvasX+1)*this.iTilesize + this.iStrokeOversize;
 		oCanvas.height = (iCanvasY+1)*this.iTilesize + this.iStrokeOversize;
 
+		/*
 		for(var i in this.jBlockData.content){
 			var oBitmap = new createjs.Bitmap(self._jQ[this.jBlockData.content[i].id].stroke);
 			oBitmap.regX = 0.5*oBitmap.image.width;
@@ -59,8 +52,10 @@ Map.prototype = {
 			oStage.addChild(oBitmap);
 		}
 		oStage.update();
+		*/
 
 		for(var i in this.jBlockData.content){
+			console.log(this.jBlockData.content[i]);
 			var oBitmap = new createjs.Bitmap(self._jQ[this.jBlockData.content[i].id].face);
 			oBitmap.regX = 0.5*oBitmap.image.width;
 			oBitmap.regY = 0.5*oBitmap.image.height;
@@ -71,53 +66,30 @@ Map.prototype = {
 		}
 
 		oStage.update();
-		this.oImg.src = oCanvas.toDataURL('image/png');
+		this._oImg.src = oCanvas.toDataURL('image/png');
 	},
-
-
-
-	update_camera: function update_camera(x, y, vxRel, vyRel){
-
-		/*
-		this.oMapContainer.style.left = ((0.5*this.iViewportWidth - x) >> 0) + 'px';
-		this.oMapContainer.style.top = ((0.5*this.iViewportHeight - y) >> 0) + 'px';
-		this.oCameraContainer.style.left = ((-Math.pow(Math.sin(vxRel*this._iMOVF*0.5*Math.PI), 2)*this.sign(vxRel)*0.5*this.iViewportWidth) >> 0) + 'px';
-		this.oCameraContainer.style.top = ((-Math.pow(Math.sin(vyRel*this._iMOVF*0.5*Math.PI), 2)*this.sign(vyRel)*0.5*this.iViewportHeight) >> 0) + 'px';
-		*/
-		//((vxRel+vyRel)*255)>>0
-		/*
-		var color1 = ((Math.abs(vxRel)+Math.abs(vyRel))*255)>>0;
-		var color2 = 255-color1;
-		*/
-
-
-		this.oMapContainer.style.transform = 'translate('+ ((0.5*this.iViewportWidth - x) >> 0) + 'px, '+ ((0.5*this.iViewportHeight - y) >> 0) +'px)';
-		this.oCameraContainer.style.transform = 'translate('+ ((-Math.pow(Math.sin(vxRel*this._iMOVF*0.5*Math.PI), 2)*this.sign(vxRel)*0.5*this.iViewportWidth) >> 0) + 'px, '+ ((-Math.pow(Math.sin(vyRel*this._iMOVF*0.5*Math.PI), 2)*this.sign(vyRel)*0.5*this.iViewportHeight) >> 0) +'px)';
+	update_camera: function update_camera(oMapContainer, oCameraContainer, x, y, vxRel, vyRel){
+		oMapContainer.style.transform = 'translate('+ ((0.5*this.iViewportWidth - x) >> 0) + 'px, '+ ((0.5*this.iViewportHeight - y) >> 0) +'px)';
+		oCameraContainer.style.transform = 'translate('+ ((-Math.pow(Math.sin(vxRel*this._iMOVF*0.5*Math.PI), 2)*this.sign(vxRel)*0.5*this.iViewportWidth) >> 0) + 'px, '+ ((-Math.pow(Math.sin(vyRel*this._iMOVF*0.5*Math.PI), 2)*this.sign(vyRel)*0.5*this.iViewportHeight) >> 0) +'px)';
 	},
-
 	sign: function sign(number){
 		return number < 0 ? -1 : 1;
 	},
-
-
-	load_blocks: function load_blocks(){
+	load_blocks: function load_blocks(oImg){
+		this._oImg = oImg;
 		for(var i in this.jBlockData.content){
 			this.add_to_q(this.jBlockData.content[i].id);
 		}
 		this.load_all_images();
 	},
-
 	on_image_loaded: function on_image_loaded(iProgressionStatus){
-		if(iProgressionStatus === 100){
+		if(iProgressionStatus === 1){
 			this.draw_on_canvas();
 		}
-		//console.log(iProgressionStatus);
 	},
-
 	add_to_q: function add_to_q(id){
 		this._jQ[id] = {stroke: false, face: false};
 	},
-
 	load_all_images: function load_all_images(){
 		var self = this;
 		for(var id in this._jQ){
@@ -141,7 +113,6 @@ Map.prototype = {
 			}(id);
 		}
 	},
-
 	get_progression_status: function get_progression_status(){
 		var
 			iCount = 0,
@@ -157,7 +128,6 @@ Map.prototype = {
 				iLoaded++;
 			}
 		}
-
-		return Math.round(iLoaded/iCount*100);
+		return iLoaded/iCount;
 	}
 };

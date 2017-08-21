@@ -25,6 +25,10 @@ $(document).ready(function(){
 		_MapDisplay,
 		_ShipDisplay,
 		_ColorProjector,
+		_ColorProjector2,
+
+		_oMapContainer = document.getElementById('map-container'),
+		_oCameraContainer = document.getElementById('camera-container'),
 
 		_sLoadedBlockData,
 		_aCheckpoints = [],
@@ -44,7 +48,6 @@ $(document).ready(function(){
 
 	VAR_END;
 
-
 	var $DEBUG = $('#debug');
 
 	var
@@ -60,14 +63,13 @@ $(document).ready(function(){
 				_$document.on('race_stop', h.on_race_stop);
 				_$document.on('race_finish', h.on_race_finish);
 				_$document.on('race_start_prepared', h.on_race_start_prepared);
-				_$document.on('block_hit', h.on_block_hit);
 				_$document.on('explode', h.on_explode);
 				_$window.on('resize', h.on_window_resize);
 				_$document.trigger('load_map');
 			},
 			
 			update_canvas_size: function update_canvas_size(){
-				_MapDisplay.update_viewport();
+				_MapDisplay.update_viewport(document.getElementById('game-canvas'));
 			},
 
 			create_sprite_instance: function create_sprite_instance(sSSId){
@@ -84,8 +86,8 @@ $(document).ready(function(){
 
 			draw_ship: function draw_ship(){
 				_ShipDisplay = new SimpleDisplay({
-					iWidth: 50,
-					iHeight: 50,
+					iWidth: 80,
+					iHeight: 80,
 					sParentId: 'camera-container'
 				});
 				_ShipDisplay.add_container('ship');
@@ -96,7 +98,18 @@ $(document).ready(function(){
 
 				var oExplosionInstance = m.create_sprite_instance('explosion');
 				_ShipDisplay.add_instance(oExplosionInstance, 'explosion', 'ship');
+				_ShipDisplay.position_instance(
+					'explosion',
+					Math.round(_ShipDisplay.iWidth/2),
+					Math.round(_ShipDisplay.iHeight/2), 
+					0
+				);
 				_ShipDisplay.hide('explosion');
+			},
+			explode_ship: function explode_ship(){
+				_ShipDisplay.hide('ship');
+				_ShipDisplay.show('explosion');
+				_ShipDisplay.goto_animation_and_play('explosion', 'explode');
 			},
 			reset_ship: function reset_ship(){
 				var jBlockData;
@@ -148,25 +161,37 @@ $(document).ready(function(){
 
 			update_camera: function update_camera(){
 				_ShipDisplay.position_instance('ship', undefined, undefined, _Ship.rotation);
-				_ShipDisplay.oStage.update();
-				_MapDisplay.update_camera(_Ship.x, _Ship.y, _Ship.vxRel, _Ship.vyRel);
-				_$gameCanvas[0].style.backgroundColor = 'rgb('+_ColorProjector.get_rgb(_Ship.vxRel, _Ship.vyRel)+')';
+				_MapDisplay.update_camera(_oMapContainer, _oCameraContainer, _Ship.x, _Ship.y, _Ship.vxRel, _Ship.vyRel);
 				
+ 				_ColorProjector.calc_rgb(_Ship.vxRel, _Ship.vyRel);
+				_$gameCanvas[0].style.backgroundColor = _ColorProjector.get_rgb();
+				_$clock[0].style.textShadow = _ColorProjector.get_shadow();
+
+				//console.log(_Ship.rotation);
+
+ 				_ColorProjector2.calc_rgb(_Ship.vxRel, _Ship.vyRel);
+ 				
+				_$clock[0].style.color = _ColorProjector2.get_rgb();
+
+				//_$clock[0].style.transform = _ColorProjector.get_transform();
 			},
 
 			perform_hittest: function perform_hittest(){
 				_jPassingBlockCoords.x = _Grid.abs_to_grid(_Ship.x);
 				_jPassingBlockCoords.y = _Grid.abs_to_grid(_Ship.y);
 
-				for(_i = 0; _i < _BlockData.layers.length; _i++){
-					_jPassingBlockCoords.z = _BlockData.layers[_i];
-					_jBlock = _BlockData.get_by_xyz(_jPassingBlockCoords.x, _jPassingBlockCoords.y, _jPassingBlockCoords.z);
-					if(!_jBlock) continue;
+				//Terrain:
+				_jBlock = _BlockData.get_by_xy_role(_jPassingBlockCoords.x, _jPassingBlockCoords.y, 'terrain');
+				if(!_jBlock || !_jBlock.oBlock.hittest(_Grid.abs_to_rel(_Ship.x), _Grid.abs_to_rel(_Ship.y))){
+					_$document.trigger('race_stop');
+					console.log('dead');
+				}
 
-					if(_jBlock.oBlock.hittest(_Grid.abs_to_rel(_Ship.x), _Grid.abs_to_rel(_Ship.y))){
-						//_$document.trigger('block_hit', {jBlock: $.extend({}, _jBlock)});
-						//_BlockData.remove_by_xyz(_jPassingBlockCoords.x, _jPassingBlockCoords.y, _jPassingBlockCoords.z);
-					}
+				//Checkpoints:
+				_jBlock = _BlockData.get_by_xy_role(_jPassingBlockCoords.x, _jPassingBlockCoords.y, 'checkpoint');
+				if(_jBlock && _jBlock.oBlock.hittest(_Grid.abs_to_rel(_Ship.x), _Grid.abs_to_rel(_Ship.y))){
+					//_$document.trigger('checkpoint_reached', {jBlock: $.extend({}, _jBlock)});
+					console.log('cp');
 				}
 			},
 
@@ -200,7 +225,6 @@ $(document).ready(function(){
 			},
 
 			on_key_controller: function on_key_controller(event){
-				
 				var actions = event.vt_actions;
 				if(actions.raceRestart){
 					_$document.trigger('race_restart');
@@ -236,27 +260,38 @@ $(document).ready(function(){
 				_sLoadedBlockData = jBlocks.sBlocks;
 				_BlockData.decode_box_data(_sLoadedBlockData);
 
-				_ColorProjector = new ColorProjector({});
+				
+				_ColorProjector = new ColorProjector({
+					sMode: 2,
+					iPhiOffset: 0,
+					iRMax:255,
+					iGMax:255,
+					iBMax: 255,
+					iConeWidth: 1*Math.PI
+				});
+				_ColorProjector2 = new ColorProjector({
+					sMode: 2,
+					iPhiOffset: Math.PI,
+					iRMax:255,
+					iGMax:255,
+					iBMax: 255
+				});
 
 				_MapDisplay = new Map({
 					iStrokeOversize: _MAP.tiles.stroke_oversize,
 					iTilesize: 400,
 					jBlockData: _BlockData,
-					oCameraContainer: document.getElementById('camera-container'),
-					oGameCanvas: document.getElementById('game-canvas'),
-					oImg: document.getElementById('map'),
-					oBg: document.getElementById('bg'),
-					oMapContainer: document.getElementById('map-container'),
 					sFaceUrl: _BLOCK_FACE_URL,
 					sSpritesheets: _SPRITESHEETS,
 					sSpritesheetUrl: _SPRITESHEET_URL,
 					sStrokeUrl: _BLOCK_STROKE_URL
 				});
-				_MapDisplay.load_blocks();
-	
+				m.update_canvas_size();
+				_MapDisplay.load_blocks(document.getElementById('map'));
+
 				m.draw_ship();
 				m.add_terrain_block_objects();
-				//m.setup_checkpoints();
+				m.setup_checkpoints();
 
 				
 				setInterval(m.tick, 1000/120);
@@ -284,17 +319,16 @@ $(document).ready(function(){
 			},
 
 			on_tick: function on_tick(){
-				
 				if(_RACING){
-					
 					_Ship.move(0.001*_oTimeTmp);
-
 					m.update_camera();
 					m.perform_hittest();
-					//_Clock.tick(_oTimeTmp);
+					_Clock.tick(_oTimeTmp);
 					_$clock.html(_Clock.get_formatted_time());
 				}
-				if(_RENDERING){}
+				if(_RENDERING){
+					_ShipDisplay.oStage.update();
+				}
 				$DEBUG.html(Math.round(1000/_oTimeTmp));
 
 				
@@ -316,15 +350,12 @@ $(document).ready(function(){
 				}
 			},
 			on_explode: function on_explode(){
-				_DisplayController.position_instance('explosion', _Ship.x, _Ship.y, _Ship.rotation);
-				_DisplayController.show('explosion');
-				_DisplayController.goto_animation_and_play('explosion', 'explode');
-				_DisplayController.hide('ship');
+				m.explode_ship();
 			},
 			on_race_stop: function on_race_stop(){
-				_$document.trigger('explode');
-				_Ship.freeze();
 				_RACING = false;
+				_Ship.freeze();
+				_$document.trigger('explode');
 			},
 			on_checkpoint_reached: function on_checkpoint_reached(){
 				for(var i = 0; i < _aCheckpoints.length; i++){

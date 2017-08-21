@@ -10,7 +10,7 @@ $(document).ready(function(){
 		_GRIDSIZE = _$body.data('jc_map').tiles.edge.editor,
 
 		_Grid = new Grid(_GRIDSIZE),
-		_BlockData = new BlockData(_BLOCKS, true),
+		_BlockData = new BlockData(_BLOCKS),
 
 		_$blockProtos = $('#block-proto-container .block'),
 		_$brushes = $('#brush-container .brush'),
@@ -61,7 +61,6 @@ $(document).ready(function(){
 			},
 			replace_block: function replace_block(jEssentials){
 				m.remove_block(jEssentials);
-				
 				var 
 					$newBlock = m.get_proto_block(jEssentials.id).clone(),
 					blockData = _BlockData.create_block_data(jEssentials);
@@ -72,7 +71,8 @@ $(document).ready(function(){
 
 				$newBlock.css({
 					top: _Grid.grid_to_snapped(jEssentials.y),
-					left: _Grid.grid_to_snapped(jEssentials.x)
+					left: _Grid.grid_to_snapped(jEssentials.x),
+					zIndex: blockData.z
 				});
 				m.rotate_element($newBlock, jEssentials.r);
 

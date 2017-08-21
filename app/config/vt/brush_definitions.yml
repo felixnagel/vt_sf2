@@ -10,16 +10,8 @@ parameters:
       filename: start_1.png
 
     -
-      block_id: checkpoint_1
-      filename: checkpoint_1.png
-
-    -
-      block_id: checkpoint_2
-      filename: checkpoint_2.png
-
-    -
-      block_id: checkpoint_3
-      filename: checkpoint_3.png
+      block_id: cp1
+      filename: coke_sprite.png
 
   -
     -

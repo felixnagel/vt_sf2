@@ -3,6 +3,7 @@
 
 {% block stylesheets %}
 	<link rel="stylesheet" href="{{ asset('css/race.css') }}" />
+    <link href="https://fonts.googleapis.com/css?family=Bangers|BioRhyme+Expanded:200|Calligraffitti|Ceviche+One|Comfortaa:300|Delius+Unicase:700|Dhurjati|Fugaz+One|Geo|Gloria+Hallelujah|Julius+Sans+One|Jura:600|Nosifer|PT+Sans+Caption|Petit+Formal+Script|Quicksand:300|Rationale|Reenie+Beanie|Revalia|Ropa+Sans|Sarpanch:400,900|Share+Tech+Mono|Short+Stack|Stalinist+One|Syncopate|UnifrakturCook:700" rel="stylesheet">  
 {% endblock %}
 
 
@@ -20,15 +21,18 @@
 
 {% block body %}
     <div id="game-canvas"> 
+        <div id="clock-container">
+            <div id="clock"></div>
+        </div>
         <span id="debug" style="position:absolute; top:0; left:0; color:red; z-index:100;"></span>
         <div id="spotlight"></div>
-        {#<img id="bg" src="{{ asset('images/bg_space_2.jpg') }}" style="" />#}
         <div id="camera-container">
             <div id="map-container">
                 <img src="" alt="" id="map" />
             </div>
         </div>
     </div>
+
 {% endblock %}
 
 

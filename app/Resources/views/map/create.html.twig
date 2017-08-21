@@ -43,7 +43,6 @@
 	        	class="block"
 	        	style="
 	        		background-image:url({{ asset(aC_dirs.blocks.face ~ sBlockId ~ '.png') }});
-	        		z-index:{% if aBlock.z is defined %}{{ aBlock.z }}{% else %}1{% endif %};
 					width:{{ aC_map.tiles.edge.editor }}px;
 					height:{{ aC_map.tiles.edge.editor }}px;
 	        	"
@@ -63,7 +62,7 @@
 			        <div class="lnG-tile lnG-col">
 				        <figure
 				        	class="brush"
-				        	style="background-image:url({{ asset(aC_dirs.blocks.brush ~ aBrush.block_id ~ '.png') }})"
+				        	style="background-image:url({{ asset(aC_dirs.blocks.brush ~ aBrush.filename) }})"
 				        	data-block_id="{{ aBrush.block_id }}"
 				        	data-rotation="0"
 				        ></figure>
