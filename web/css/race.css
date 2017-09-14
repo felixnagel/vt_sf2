@@ -65,3 +65,6 @@ font-family: 'Fugaz One', cursive;
 	background-image: radial-gradient(ellipse farthest-corner at 50% 50% , rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.8) 100%);
 	z-index:10;
 }
+#map-container canvas{
+	z-index:10;
+}

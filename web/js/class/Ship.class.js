@@ -1,4 +1,5 @@
 function Ship(settings){
+	console.log(settings);
 	/**
 	 * whitelist settings keys
 	 */
@@ -49,7 +50,6 @@ Ship.prototype = {
 	F_0y            : 0,
 	friction        : 0,
 	handling   		: 0,
-	initialRotation : 0,
 	mass            : 0,
 	powerBrakes     : 0,
 	powerEngine     : 0,

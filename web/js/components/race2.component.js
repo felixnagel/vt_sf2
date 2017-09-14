@@ -19,6 +19,7 @@ $(document).ready(function(){
 
 		_Grid = new Grid(_MAP.tiles.edge.race),
 		_Ship,
+		_oTimes,
 		_Clock = new VtClock(),
 		_KeyController = new VtKeyController(),
 		_BlockData = new BlockData(_BLOCKS),
@@ -31,7 +32,7 @@ $(document).ready(function(){
 		_oCameraContainer = document.getElementById('camera-container'),
 
 		_sLoadedBlockData,
-		_aCheckpoints = [],
+		_aCheckpointDisplays = [],
 		_RACING = false,
 		_RENDERING = false,
 		_i = 0,
@@ -86,28 +87,33 @@ $(document).ready(function(){
 
 			draw_ship: function draw_ship(){
 				_ShipDisplay = new SimpleDisplay({
-					iWidth: 80,
-					iHeight: 80,
+					iWidth: 100,
+					iHeight: 100,
 					sParentId: 'camera-container'
 				});
-				_ShipDisplay.add_container('ship');
 				
+				_ShipDisplay.add_container('ship');
 				var oShipInstance = m.create_sprite_instance('ship');
 				_ShipDisplay.add_instance(oShipInstance, 'ship', 'ship');
 				_ShipDisplay.position_instance('ship', 0, 0, 0);
 
+				/*
+				_ShipDisplay.add_container('exhaust');
+				var oExhaustInstance = m.create_sprite_instance('exhaust');
+				_ShipDisplay.add_instance(oExhaustInstance, 'exhaust', 'exhaust');
+				_ShipDisplay.position_instance('exhaust', 0, 0, 0);
+				*/
+
 				var oExplosionInstance = m.create_sprite_instance('explosion');
 				_ShipDisplay.add_instance(oExplosionInstance, 'explosion', 'ship');
 				_ShipDisplay.position_instance(
-					'explosion',
-					Math.round(_ShipDisplay.iWidth/2),
-					Math.round(_ShipDisplay.iHeight/2), 
-					0
+					'explosion', (_ShipDisplay.iWidth/2)>>0, (_ShipDisplay.iHeight/2)>>0, 0
 				);
 				_ShipDisplay.hide('explosion');
 			},
 			explode_ship: function explode_ship(){
 				_ShipDisplay.hide('ship');
+				//_ShipDisplay.hide('exhaust');
 				_ShipDisplay.show('explosion');
 				_ShipDisplay.goto_animation_and_play('explosion', 'explode');
 			},
@@ -121,10 +127,12 @@ $(document).ready(function(){
 				}
 
 				_Ship = new Ship(_SHIP);
+				
 				_ShipDisplay.position(
 					Math.round(_$gameCanvas.width()/2-_ShipDisplay.iWidth/2),
 					Math.round(_$gameCanvas.height()/2-_ShipDisplay.iHeight/2)
 				);
+
 				_ShipDisplay.position_instance(
 					'ship',
 					Math.round(_ShipDisplay.iWidth/2),
@@ -133,6 +141,18 @@ $(document).ready(function(){
 				);
 				_ShipDisplay.show('ship');				
 				_ShipDisplay.goto_animation_and_play('ship', 'idle');
+
+				/*
+				_ShipDisplay.position_instance(
+					'exhaust',
+					Math.round(_ShipDisplay.iWidth/2),
+					Math.round(_ShipDisplay.iHeight/2), 
+					0
+				);
+				_ShipDisplay.show('exhaust');				
+				_ShipDisplay.goto_animation_and_play('exhaust', 'idle');
+				*/
+
 				_ShipDisplay.hide('explosion');
 			},
 
@@ -150,6 +170,7 @@ $(document).ready(function(){
 			prepare_race_start: function prepare_race_start(){
 				m.reset_ship();
 				m.update_camera();
+				m.reset_checkpoints();
 				_Clock.set_null();
 				_$document.trigger('race_start_prepared');
 			},
@@ -160,7 +181,8 @@ $(document).ready(function(){
 			},
 
 			update_camera: function update_camera(){
-				_ShipDisplay.position_instance('ship', undefined, undefined, _Ship.rotation);
+				_ShipDisplay.position_instance('ship', undefined, undefined, _Ship.rotation+90);
+				//_ShipDisplay.position_instance('exhaust', undefined, undefined, _Ship.rotation+90);
 				_MapDisplay.update_camera(_oMapContainer, _oCameraContainer, _Ship.x, _Ship.y, _Ship.vxRel, _Ship.vyRel);
 				
  				_ColorProjector.calc_rgb(_Ship.vxRel, _Ship.vyRel);
@@ -184,30 +206,66 @@ $(document).ready(function(){
 				_jBlock = _BlockData.get_by_xy_role(_jPassingBlockCoords.x, _jPassingBlockCoords.y, 'terrain');
 				if(!_jBlock || !_jBlock.oBlock.hittest(_Grid.abs_to_rel(_Ship.x), _Grid.abs_to_rel(_Ship.y))){
 					_$document.trigger('race_stop');
-					console.log('dead');
 				}
 
 				//Checkpoints:
 				_jBlock = _BlockData.get_by_xy_role(_jPassingBlockCoords.x, _jPassingBlockCoords.y, 'checkpoint');
-				if(_jBlock && _jBlock.oBlock.hittest(_Grid.abs_to_rel(_Ship.x), _Grid.abs_to_rel(_Ship.y))){
+				if(_jBlock && !_jBlock.bReached && _jBlock.oBlock.hittest(_Grid.abs_to_rel(_Ship.x), _Grid.abs_to_rel(_Ship.y))){
+					console.log(_jBlock);			
+					_jBlock.bReached = true;
+					_jBlock.oDisplay.goto_animation_and_play('cp1', 'pass');
 					//_$document.trigger('checkpoint_reached', {jBlock: $.extend({}, _jBlock)});
-					console.log('cp');
 				}
 			},
 
 			setup_checkpoints: function setup_checkpoints(){
-				_aCheckpoints = [];
 				for(var sBlockKey in _BlockData.content){
 					var jBlockData = _BlockData.content[sBlockKey];
 					if(jBlockData.role === 'checkpoint'){
-						_aCheckpoints.push({
-							currentTime: false,
-							personalBest: false,
-							globalBest: false
-						});
+						_aCheckpointDisplays.push(sBlockKey);
+						_BlockData.content[sBlockKey].oDisplay = m.create_checkpoint_display(jBlockData);
 					}
 				}
+				console.log(_aCheckpointDisplays);
 			},
+
+			reset_checkpoints: function reset_checkpoints(){
+				for(_i = 0; _i < _aCheckpointDisplays.length; _i++){
+					_BlockData.content[_aCheckpointDisplays[_i]].bReached = false;
+					_BlockData.content[_aCheckpointDisplays[_i]].oDisplay.goto_animation_and_play('cp1', 'idle');
+				}
+			},
+
+			add_checkpoint_objects: function add_checkpoint_objects(){
+			},
+
+			create_checkpoint_display: function create_checkpoint_display(jBlockData){
+				var 
+					oCpDisplay,
+					oCpSsInstance,
+					iCanvasWidth = 150,
+					iCanvasHeight = 150;
+
+				oCpDisplay = new SimpleDisplay({
+					iWidth: iCanvasWidth,
+					iHeight: iCanvasHeight,
+					sParentId: 'map-container'
+				});
+				
+				oCpDisplay.position(
+					(jBlockData.x*jBlockData.oBlock.edge+(jBlockData.oBlock.edge-iCanvasWidth)/2)>>0,
+					(jBlockData.y*jBlockData.oBlock.edge+(jBlockData.oBlock.edge-iCanvasHeight)/2)>>0
+				);
+
+				oCpDisplay.add_container('cp');
+				oCpSsInstance = m.create_sprite_instance('cp1');
+				oCpDisplay.add_instance(oCpSsInstance, 'cp1', 'cp');
+				oCpDisplay.position_instance(
+					'cp1', (oCpDisplay.iWidth/2)>>0, (oCpDisplay.iHeight/2)>>0, 0
+				);
+				return oCpDisplay;
+			},
+
 
 			transfer_terrain_blocks_to_img: function transfer_terrain_blocks_to_img(){
 				_$imgBg.attr('src', _$canvasBg[0].toDataURL());
@@ -229,31 +287,67 @@ $(document).ready(function(){
 				if(actions.raceRestart){
 					_$document.trigger('race_restart');
 				}
-				if(!actions.A && !actions.D){
-					if(_Ship.is_steering_left()){
-						_ShipDisplay.goto_animation_and_play('ship', 'left_to_straight');
-					}
-					if(_Ship.is_steering_right()){
-						_ShipDisplay.goto_animation_and_play('ship', 'right_to_straight');
-					}
-					_Ship.steer_straight();
-				}
-				if(actions.A){
-					_ShipDisplay.goto_animation_and_play('ship', 'straight_to_left');
-					_Ship.steer_left();
-				}
-				if(actions.D){
-					_ShipDisplay.goto_animation_and_play('ship', 'straight_to_right');
-					_Ship.steer_right();
-				}
-				if(!actions.W && !actions.S){
-					_Ship.no_load();
-				}
+				
 				if(actions.W){
 					_Ship.thrust();
 				}
+
+				if(!actions.A && !actions.D){
+					if(actions.W){
+						if(_Ship.is_steering_left()){
+							console.log('1_left_to_straight');
+							_ShipDisplay.goto_animation_and_play('ship', '1_left_to_straight');
+						}else{
+							if(_Ship.is_steering_right()){
+								console.log('1_right_to_straight');
+								_ShipDisplay.goto_animation_and_play('ship', '1_right_to_straight');
+							}else{
+								console.log('1_straight');
+								_ShipDisplay.goto_animation_and_play('ship', '1_straight');
+							}
+						}
+					}
+					if(!actions.W){
+						if(_Ship.is_steering_left()){
+							console.log('0_left_to_straight');
+							_ShipDisplay.goto_animation_and_play('ship', '0_left_to_straight');
+						}else{
+							if(_Ship.is_steering_right()){
+								console.log('0_right_to_straight');
+								_ShipDisplay.goto_animation_and_play('ship', '0_right_to_straight');
+							}else{
+								console.log('0_straight');
+								_ShipDisplay.goto_animation_and_play('ship', '0_straight');
+							}
+						}
+					}
+					_Ship.steer_straight();
+				}
+
+				if(actions.A){
+					_Ship.steer_left();
+					if(!actions.W){
+						_ShipDisplay.goto_animation_and_play('ship', '0_straight_to_left');
+					}
+					if(actions.W){
+						_ShipDisplay.goto_animation_and_play('ship', '1_straight_to_left');
+					}
+				}
+				if(actions.D){
+					_Ship.steer_right();
+					if(!actions.W){
+						_ShipDisplay.goto_animation_and_play('ship', '0_straight_to_right');
+					}
+					if(actions.W){
+						_ShipDisplay.goto_animation_and_play('ship', '1_straight_to_right');
+					}
+				}
+
 				if(actions.S){
 					_Ship.throttle();
+				}
+				if(!actions.W && !actions.S){
+					_Ship.no_load();
 				}
 			},
 			on_map_loaded: function on_map_loaded(event, jBlocks){
@@ -292,7 +386,6 @@ $(document).ready(function(){
 				m.draw_ship();
 				m.add_terrain_block_objects();
 				m.setup_checkpoints();
-
 				
 				setInterval(m.tick, 1000/120);
 
@@ -309,9 +402,6 @@ $(document).ready(function(){
 				m.prepare_race_start();
 			},
 			on_race_restart: function on_race_restart(){
-				_BlockData.decode_box_data(_sLoadedBlockData);
-				m.add_terrain_block_objects();
-				m.setup_checkpoints();
 				m.prepare_race_start();
 			},
 			on_race_start_prepared: function on_race_start_prepared(){
@@ -328,26 +418,13 @@ $(document).ready(function(){
 				}
 				if(_RENDERING){
 					_ShipDisplay.oStage.update();
+					for(_i = 0; _i < _aCheckpointDisplays.length; _i++){
+						_BlockData.content[_aCheckpointDisplays[_i]].oDisplay.oStage.update();
+					}
 				}
 				$DEBUG.html(Math.round(1000/_oTimeTmp));
 
 				
-			},
-			on_block_hit: function on_block_hit(event, jEventData){
-				var 
-					jBlock = jEventData.jBlock,
-					sBlockKey = _BlockData.create_key(jBlock);
-
-				if(jBlock.role === 'terrain'){
-					_$document.trigger('race_stop');
-				}
-				if(jBlock.role === 'checkpoint' || jBlock.role === 'finish'){
-					_DisplayController.goto_animation_and_play(sBlockKey, 'pass');
-					_$document.trigger('checkpoint_reached');
-				}
-				if(jBlock.role === 'starting_position'){
-					//_DisplayController.goto_animation_and_play(sBlockKey, 'pass');
-				}
 			},
 			on_explode: function on_explode(){
 				m.explode_ship();
@@ -357,18 +434,7 @@ $(document).ready(function(){
 				_Ship.freeze();
 				_$document.trigger('explode');
 			},
-			on_checkpoint_reached: function on_checkpoint_reached(){
-				for(var i = 0; i < _aCheckpoints.length; i++){
-					if(_aCheckpoints[i].currentTime === false){
-						_aCheckpoints[i].currentTime = _Clock.get_time();
-						if(i === _aCheckpoints.length - 1){
-							_$document.trigger('race_stop');
-							_$document.trigger('race_finish', {checkpoints: _aCheckpoints.slice()});
-						}
-						break;
-					}
-				}
-			},
+			on_checkpoint_reached: function on_checkpoint_reached(){},
 			on_race_start: function on_race_start(){},
 			on_race_finish: function on_race_finish(){}
 		};

@@ -19,8 +19,9 @@ parameters:
   app.ship:
     mass: 1
     friction: 1
-    handling: 350 # degree per second
+    handling: 360 # degree per second
     v_max: 1500 # px per second
+    rotation: 0
 
 
 # http://paletton.com/#uid=72W0u0kk8++7f+Wew+Zpz+WvHZJ

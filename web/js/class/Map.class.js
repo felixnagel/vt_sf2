@@ -27,21 +27,25 @@ Map.prototype = {
 			ctx = oCanvas.getContext('2d'),
 			oStage = new createjs.Stage(oCanvas),
 			iCanvasX = 0,
-			iCanvasY = 0;
+			iCanvasY = 0,
+			jBlock;
 
 		for(var i in this.jBlockData.content){
-			if(this.jBlockData.content[i].x > iCanvasX){
-				iCanvasX = +this.jBlockData.content[i].x;
+			jBlock = this.jBlockData.content[i];
+			if(jBlock.role !== 'terrain'){
+				continue;
 			}
-			if(this.jBlockData.content[i].y > iCanvasY){
-				iCanvasY = +this.jBlockData.content[i].y;
+			if(jBlock.x > iCanvasX){
+				iCanvasX = +jBlock.x;
+			}
+			if(jBlock.y > iCanvasY){
+				iCanvasY = +jBlock.y;
 			}
 		}
 
 		oCanvas.width = (iCanvasX+1)*this.iTilesize + this.iStrokeOversize;
 		oCanvas.height = (iCanvasY+1)*this.iTilesize + this.iStrokeOversize;
 
-		/*
 		for(var i in this.jBlockData.content){
 			var oBitmap = new createjs.Bitmap(self._jQ[this.jBlockData.content[i].id].stroke);
 			oBitmap.regX = 0.5*oBitmap.image.width;
@@ -52,16 +56,18 @@ Map.prototype = {
 			oStage.addChild(oBitmap);
 		}
 		oStage.update();
-		*/
 
 		for(var i in this.jBlockData.content){
-			console.log(this.jBlockData.content[i]);
-			var oBitmap = new createjs.Bitmap(self._jQ[this.jBlockData.content[i].id].face);
+			jBlock = this.jBlockData.content[i];
+			if(jBlock.role !== 'terrain'){
+				continue;
+			}
+			var oBitmap = new createjs.Bitmap(self._jQ[jBlock.id].face);
 			oBitmap.regX = 0.5*oBitmap.image.width;
 			oBitmap.regY = 0.5*oBitmap.image.height;
-			oBitmap.x = this.jBlockData.content[i].x*this.iTilesize+0.5*(oBitmap.image.width+this.iStrokeOversize) >> 0;
-			oBitmap.y = this.jBlockData.content[i].y*this.iTilesize+0.5*(oBitmap.image.height+this.iStrokeOversize) >> 0;
-			oBitmap.rotation = this.jBlockData.content[i].r >> 0;
+			oBitmap.x = jBlock.x*this.iTilesize+0.5*(oBitmap.image.width+this.iStrokeOversize) >> 0;
+			oBitmap.y = jBlock.y*this.iTilesize+0.5*(oBitmap.image.height+this.iStrokeOversize) >> 0;
+			oBitmap.rotation = jBlock.r >> 0;
 			oStage.addChild(oBitmap);
 		}
 
