@@ -8,7 +8,6 @@ parameters:
 
         start_1:
             role: starting_position
-            sprite: start_1
             htf: e01
 
         cp1:

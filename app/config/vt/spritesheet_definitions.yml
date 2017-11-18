@@ -3,11 +3,11 @@ parameters:
     explosion:
       images: [explosion_1.png]
       frames:
-        count: 240
-        height: 80
-        regX: 40
-        regY: 40
-        width: 80
+        count: 120
+        height: 100
+        regX: 50
+        regY: 50
+        width: 100
       animations:
         explode: [0, 119, null, 1.0] 
 

@@ -1,5 +1,36 @@
 function Ship(settings){
 	console.log(settings);
+
+	/**
+	 * settings
+	 */
+	this.blackbox_enabled = false;
+	this.F_0x = 0;
+	this.F_0y = 0;
+	this.friction = 0;
+	this.handling = 0;
+	this.mass = 0;
+	this.powerBrakes = 0;
+	this.powerEngine = 0;
+	this.v_max = 0;
+
+	/**
+	 * values
+	 */
+	this.blackbox = [];
+	this.F_engine = 0;
+	this.rad = 0;
+	this.rotation = 0;
+	this.steering = 0;
+	this.t = 0;
+	this.vAbs = 0;
+	this.vx = 0;
+	this.vxRel = 0;
+	this.vy = 0;
+	this.vyRel = 0;
+	this.x = 0;
+	this.y = 0;
+
 	/**
 	 * whitelist settings keys
 	 */
@@ -39,38 +70,12 @@ function Ship(settings){
 		this.powerEngine = Math.pow(this.v_max, 2) * this.friction;
 		this.powerBrakes = 0.5*this.powerEngine;
 	}
+
+	this._bFreeze = false;
 }
 
 Ship.prototype = {
-	/**
-	 * settings
-	 */
-	blackbox_enabled : false,
-	F_0x            : 0,
-	F_0y            : 0,
-	friction        : 0,
-	handling   		: 0,
-	mass            : 0,
-	powerBrakes     : 0,
-	powerEngine     : 0,
-	v_max            : 0,
 
-	/**
-	 * values
-	 */
-	blackbox : [],
-	F_engine : 0,
-	rad      : 0,
-	rotation : 0,
-	steering : 0,
-	t        : 0,
-	vAbs     : 0,
-	vx       : 0,
-	vxRel    : 0,
-	vy       : 0,
-	vyRel    : 0,
-	x        : 0,
-	y        : 0,
 
 	/**
 	 * methods
@@ -107,12 +112,17 @@ Ship.prototype = {
 		});
 	},
 
-	_drotation : null,
-	_F_ex : null,
-	_F_ey : null,
-	_F_fx : null,
-	_F_fy : null,
-	move : function move(dt){
+	_drotation: null,
+	_F_ex: null,
+	_F_ey: null,
+	_F_fx: null,
+	_F_fy: null,
+
+	move: function move(dt){
+		if(this._bFreeze === true){
+			return;
+		}
+
 		/**
 		 * set new t
 		 */
@@ -141,8 +151,8 @@ Ship.prototype = {
 		/**
 		 * calculate v
 		 */
-		this.vx    += dt * (this._F_ex + this.F_0x + this._F_fx) / this.mass;
-		this.vy    += dt * (this._F_ey + this.F_0y + this._F_fy) / this.mass;
+		this.vx += dt * (this._F_ex + this.F_0x + this._F_fx) / this.mass;
+		this.vy += dt * (this._F_ey + this.F_0y + this._F_fy) / this.mass;
 		this.vxRel = this.vx / this.v_max;
 		this.vyRel = this.vy / this.v_max;
 		this.vAbs  = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
@@ -185,6 +195,8 @@ Ship.prototype = {
 		return this.steering > 0;
 	},
 	freeze: function freeze(){
+		this._bFreeze = true;
+		/*
 		this.steering = 0;
 		this.F_engine = 0;
 		this.vx = 0;
@@ -192,5 +204,6 @@ Ship.prototype = {
 		this.vxRel = 0;
 		this.vyRel = 0;
 		this.vAbs = 0;
+		*/
 	}
 };

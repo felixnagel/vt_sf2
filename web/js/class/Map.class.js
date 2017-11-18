@@ -1,25 +1,23 @@
 function Map(settings){
-	this.jBlockData = settings.jBlockData;
 	this.iTilesize = settings.iTilesize;
 	this.sFaceUrl = settings.sFaceUrl;
 	this.sStrokeUrl = settings.sStrokeUrl;
 	this.iStrokeOversize = settings.iStrokeOversize;
+	
+	this._aBlocks = [];
+	this._oImg = null;
+	this._jQ = {};
+	this._iMOVF = 0.4;
 }
 
 Map.prototype = {
-	_oImg: null,
-	_jQ: {},
-	_iFaceEdge: null,
-	_iStrokeEdge: null,
-	_bStrokesLoaded: false,
-	_bFacesLoaded: false,
-	_iMOVF: 0.4,
-
+	add_block: function add_block(id, x, y, r){
+		this._aBlocks.push({id: id, x: x, y: y, r: r});
+	},
 	update_viewport: function update_viewport(oGameCanvas){
 		this.iViewportWidth = oGameCanvas.clientWidth;
 		this.iViewportHeight = oGameCanvas.clientHeight;
 	},
-
 	draw_on_canvas: function draw_on_canvas(){
 		var 
 			self = this,
@@ -30,11 +28,8 @@ Map.prototype = {
 			iCanvasY = 0,
 			jBlock;
 
-		for(var i in this.jBlockData.content){
-			jBlock = this.jBlockData.content[i];
-			if(jBlock.role !== 'terrain'){
-				continue;
-			}
+		for(var i in this._aBlocks){
+			jBlock = this._aBlocks[i];
 			if(jBlock.x > iCanvasX){
 				iCanvasX = +jBlock.x;
 			}
@@ -46,22 +41,19 @@ Map.prototype = {
 		oCanvas.width = (iCanvasX+1)*this.iTilesize + this.iStrokeOversize;
 		oCanvas.height = (iCanvasY+1)*this.iTilesize + this.iStrokeOversize;
 
-		for(var i in this.jBlockData.content){
-			var oBitmap = new createjs.Bitmap(self._jQ[this.jBlockData.content[i].id].stroke);
+		for(var i in this._aBlocks){
+			jBlock = this._aBlocks[i];
+			var oBitmap = new createjs.Bitmap(self._jQ[jBlock.id].stroke);
 			oBitmap.regX = 0.5*oBitmap.image.width;
 			oBitmap.regY = 0.5*oBitmap.image.height;
-			oBitmap.x = this.jBlockData.content[i].x*this.iTilesize+0.5*(oBitmap.image.width-this.iStrokeOversize) >> 0;
-			oBitmap.y = this.jBlockData.content[i].y*this.iTilesize+0.5*(oBitmap.image.height-this.iStrokeOversize) >> 0;
-			oBitmap.rotation = this.jBlockData.content[i].r >> 0;
+			oBitmap.x = jBlock.x*this.iTilesize+0.5*(oBitmap.image.width-this.iStrokeOversize) >> 0;
+			oBitmap.y = jBlock.y*this.iTilesize+0.5*(oBitmap.image.height-this.iStrokeOversize) >> 0;
+			oBitmap.rotation = jBlock.r >> 0;
 			oStage.addChild(oBitmap);
 		}
-		oStage.update();
 
-		for(var i in this.jBlockData.content){
-			jBlock = this.jBlockData.content[i];
-			if(jBlock.role !== 'terrain'){
-				continue;
-			}
+		for(var i in this._aBlocks){
+			jBlock = this._aBlocks[i];
 			var oBitmap = new createjs.Bitmap(self._jQ[jBlock.id].face);
 			oBitmap.regX = 0.5*oBitmap.image.width;
 			oBitmap.regY = 0.5*oBitmap.image.height;
@@ -83,13 +75,14 @@ Map.prototype = {
 	},
 	load_blocks: function load_blocks(oImg){
 		this._oImg = oImg;
-		for(var i in this.jBlockData.content){
-			this.add_to_q(this.jBlockData.content[i].id);
+		for(var i in this._aBlocks){
+			this.add_to_q(this._aBlocks[i].id);
 		}
 		this.load_all_images();
 	},
 	on_image_loaded: function on_image_loaded(iProgressionStatus){
 		if(iProgressionStatus === 1){
+			console.log('all faces/strokes loaded!');
 			this.draw_on_canvas();
 		}
 	},
@@ -105,7 +98,7 @@ Map.prototype = {
 			var oImgFace = new Image();
 			oImgFace.src = self.sFaceUrl+id+'.png';
 			
-			!function(id){
+			(function(id){
 				oImgStroke.onload = function(event){
 					self._jQ[id].stroke = this;
 					var iProgressionStatus = self.get_progression_status();
@@ -116,7 +109,7 @@ Map.prototype = {
 					var iProgressionStatus = self.get_progression_status();
 					self.on_image_loaded(iProgressionStatus);
 				};
-			}(id);
+			}(id));
 		}
 	},
 	get_progression_status: function get_progression_status(){

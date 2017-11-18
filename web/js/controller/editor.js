@@ -60,12 +60,13 @@ $(document).ready(function(){
 				}
 			},
 			replace_block: function replace_block(jEssentials){
+				console.log(_BlockData);
 				m.remove_block(jEssentials);
 				var 
 					$newBlock = m.get_proto_block(jEssentials.id).clone(),
 					blockData = _BlockData.create_block_data(jEssentials);
 
-				if(blockData.role === 'clear_terrain'){
+				if(blockData.role === 'clear_terrain_1' || blockData.role === 'clear_terrain_2'){
 					return;
 				}
 

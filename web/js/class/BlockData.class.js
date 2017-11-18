@@ -20,8 +20,8 @@ BlockData.prototype = {
 			return undefined;
 		}
 	},
-	get_by_xy_role: function get_by_xy_role(x, y, sRole){
-		return this.content[x+this._D2+y+this._D2+this.get_z_by_role(sRole)];
+	get_key_by_xy_role: function get_key_by_xy_role(x, y, sRole){
+		return x+this._D2+y+this._D2+this.get_z_by_role(sRole);
 	},
 	get_by_xyz: function get_by_xyz(x, y, z){
 		return this.content[x+this._D2+y+this._D2+z];
@@ -87,6 +87,10 @@ BlockData.prototype = {
 
 			if(this.layers.indexOf(jBlockData.z) == -1){
 				this.layers.push(jBlockData.z);
+			}
+
+			if(jBlockData.htf === undefined){
+				jBlockData.htf = jBlockData.id;
 			}
 
 			this.content[this.create_key(jBlockData)] = jBlockData;

@@ -2,21 +2,21 @@ function VtClock(){
 	this.set_null();
 };
 VtClock.prototype = {
-	_iMs: null,
+	_iS: null,
 	_sFormattedTime: null,
 	set_null: function set_null(){
-		this._iMs = 0;
+		this._iS = 0;
 		this._sFormattedTime = '00:00:00';
 	},
-	tick: function tick(iDMS){
-		this._iMs += iDMS;
-		this._sFormattedTime = this.get_minutes((this._iMs/1000/60)%60<<0) + ':' + this.get_seconds((this._iMs/1000)%60<<0) + ':' + this.get_milliseconds(this._iMs%1000<<0);
+	tick: function tick(iS){
+		this._iS += iS;
+		this._sFormattedTime = this.get_minutes((this._iS/60)%60<<0) + ':' + this.get_seconds(this._iS<<0) + ':' + this.get_milliseconds((this._iS*1000)%1000<<0);
 	},
 	get_formatted_time: function get_formatted_time(){
 		return this._sFormattedTime;
 	},
 	get_time: function get_time(){
-		return this._iMs<<0;
+		return this._iS;
 	},
 	get_minutes: function get_minutes(minutes){
 		if(minutes < 10){

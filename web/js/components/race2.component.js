@@ -16,6 +16,7 @@ $(document).ready(function(){
 		_SHIP = _$body.data('jc_ship'),
 		_SPRITESHEET_URL = _$body.data('sc_spritesheet_url'),
 		_SPRITESHEETS = _$body.data('jc_spritesheets'),
+		_USE_EASEL_TICK = false,
 
 		_Grid = new Grid(_MAP.tiles.edge.race),
 		_Ship,
@@ -31,20 +32,21 @@ $(document).ready(function(){
 		_oMapContainer = document.getElementById('map-container'),
 		_oCameraContainer = document.getElementById('camera-container'),
 
-		_sLoadedBlockData,
 		_aCheckpointDisplays = [],
+		_jCheckpoints = {},
 		_RACING = false,
 		_RENDERING = false,
-		_i = 0,
-		_jBlock,
 		_jPassingBlockCoords = {x: 0, y: 0, z: 0},
-		_iDelta,
-		
+		_jTerrainBlocks = {},
+
 		_iTimeStart = 0,
 		_iTimeCount = 0,
 
-		_oTimeTmp = +new Date,
-		_oLastFrame = +new Date,
+		_iTickDeltaTime = 0,
+		_iTimestampLast = Date.now(),
+
+		_i = 0,
+		_sKey = '',
 
 
 	VAR_END;
@@ -57,7 +59,15 @@ $(document).ready(function(){
 				_$document.on('map_loaded', h.on_map_loaded);
 				_$document.on('map_drawn', h.on_map_drawn);
 				m.prepare_spritesheet_definitions();
-				//createjs.Ticker.addEventListener('tick', h.on_tick);
+				
+				if(_USE_EASEL_TICK){
+					createjs.Ticker.addEventListener('tick', h.on_tick);
+				}else{
+					setInterval(function(){
+						m.tick();
+					}, 1000/60);
+				}
+
 				window.addEventListener('VtKeyController', h.on_key_controller);
 				_$document.on('checkpoint_reached', h.on_checkpoint_reached);
 				_$document.on('race_restart', h.on_race_restart);
@@ -77,10 +87,11 @@ $(document).ready(function(){
 				return new createjs.Sprite(new createjs.SpriteSheet(_SPRITESHEETS[sSSId]));
 			},
 			prepare_spritesheet_definitions: function prepare_spritesheet_definitions(){
+				var aImages;
 				for(var sSSId in _SPRITESHEETS){
-					var aImages = _SPRITESHEETS[sSSId].images;
-					for(var i = 0; i < aImages.length; i++){
-						_SPRITESHEETS[sSSId].images[i] = _SPRITESHEET_URL+_SPRITESHEETS[sSSId].images[i];
+					aImages = _SPRITESHEETS[sSSId].images;
+					for(_i = 0; _i < aImages.length; _i++){
+						_SPRITESHEETS[sSSId].images[_i] = _SPRITESHEET_URL+_SPRITESHEETS[sSSId].images[_i];
 					}
 				}
 			},
@@ -97,62 +108,44 @@ $(document).ready(function(){
 				_ShipDisplay.add_instance(oShipInstance, 'ship', 'ship');
 				_ShipDisplay.position_instance('ship', 0, 0, 0);
 
-				/*
-				_ShipDisplay.add_container('exhaust');
-				var oExhaustInstance = m.create_sprite_instance('exhaust');
-				_ShipDisplay.add_instance(oExhaustInstance, 'exhaust', 'exhaust');
-				_ShipDisplay.position_instance('exhaust', 0, 0, 0);
-				*/
-
 				var oExplosionInstance = m.create_sprite_instance('explosion');
 				_ShipDisplay.add_instance(oExplosionInstance, 'explosion', 'ship');
 				_ShipDisplay.position_instance(
-					'explosion', (_ShipDisplay.iWidth/2)>>0, (_ShipDisplay.iHeight/2)>>0, 0
+					'explosion', (_ShipDisplay.iCanvasWidth/2)>>0, (_ShipDisplay.iCanvasHeight/2)>>0, 0
 				);
 				_ShipDisplay.hide('explosion');
 			},
 			explode_ship: function explode_ship(){
 				_ShipDisplay.hide('ship');
-				//_ShipDisplay.hide('exhaust');
 				_ShipDisplay.show('explosion');
 				_ShipDisplay.goto_animation_and_play('explosion', 'explode');
 			},
 			reset_ship: function reset_ship(){
 				var jBlockData;
+				_Ship = new Ship(_SHIP);
 				for(var sBlockKey in _BlockData.content){
 					jBlockData = _BlockData.content[sBlockKey];
 					if(jBlockData.role == 'starting_position'){
-						
+						_Ship.x = _Grid.grid_to_snapped_centered(jBlockData.x);
+						_Ship.y = _Grid.grid_to_snapped_centered(jBlockData.y);
+						_Ship.rot = jBlockData.rot;
 					}
 				}
-
-				_Ship = new Ship(_SHIP);
 				
 				_ShipDisplay.position(
-					Math.round(_$gameCanvas.width()/2-_ShipDisplay.iWidth/2),
-					Math.round(_$gameCanvas.height()/2-_ShipDisplay.iHeight/2)
+					Math.round(_$gameCanvas.width()/2-_ShipDisplay.iCanvasWidth/2),
+					Math.round(_$gameCanvas.height()/2-_ShipDisplay.iCanvasHeight/2)
 				);
 
 				_ShipDisplay.position_instance(
 					'ship',
-					Math.round(_ShipDisplay.iWidth/2),
-					Math.round(_ShipDisplay.iHeight/2), 
+					Math.round(_ShipDisplay.iCanvasWidth/2),
+					Math.round(_ShipDisplay.iCanvasHeight/2), 
 					0
 				);
+
 				_ShipDisplay.show('ship');				
 				_ShipDisplay.goto_animation_and_play('ship', 'idle');
-
-				/*
-				_ShipDisplay.position_instance(
-					'exhaust',
-					Math.round(_ShipDisplay.iWidth/2),
-					Math.round(_ShipDisplay.iHeight/2), 
-					0
-				);
-				_ShipDisplay.show('exhaust');				
-				_ShipDisplay.goto_animation_and_play('exhaust', 'idle');
-				*/
-
 				_ShipDisplay.hide('explosion');
 			},
 
@@ -160,10 +153,7 @@ $(document).ready(function(){
 				var jBlockData;
 				for(var sBlockKey in _BlockData.content){
 					jBlockData = _BlockData.content[sBlockKey];
-					if(jBlockData.htf === undefined){
-						jBlockData.htf = jBlockData.id;
-					}
-					_BlockData.set(jBlockData, {oBlock: new TerrainBlock(_MAP.tiles.edge.race, jBlockData.htf, jBlockData.r)})
+					_jTerrainBlocks[sBlockKey] = new TerrainBlock(_MAP.tiles.edge.race, jBlockData.htf, jBlockData.r);
 				}
 			},
 
@@ -180,66 +170,78 @@ $(document).ready(function(){
 				_RENDERING = true;
 			},
 
+
+			// ------------------------------------------------------------------------------------
+			// CAMERA, HITTEST, TICK
+			// ------------------------------------------------------------------------------------
 			update_camera: function update_camera(){
 				_ShipDisplay.position_instance('ship', undefined, undefined, _Ship.rotation+90);
-				//_ShipDisplay.position_instance('exhaust', undefined, undefined, _Ship.rotation+90);
 				_MapDisplay.update_camera(_oMapContainer, _oCameraContainer, _Ship.x, _Ship.y, _Ship.vxRel, _Ship.vyRel);
 				
  				_ColorProjector.calc_rgb(_Ship.vxRel, _Ship.vyRel);
 				_$gameCanvas[0].style.backgroundColor = _ColorProjector.get_rgb();
 				_$clock[0].style.textShadow = _ColorProjector.get_shadow();
 
-				//console.log(_Ship.rotation);
-
  				_ColorProjector2.calc_rgb(_Ship.vxRel, _Ship.vyRel);
  				
 				_$clock[0].style.color = _ColorProjector2.get_rgb();
-
-				//_$clock[0].style.transform = _ColorProjector.get_transform();
 			},
-
 			perform_hittest: function perform_hittest(){
 				_jPassingBlockCoords.x = _Grid.abs_to_grid(_Ship.x);
 				_jPassingBlockCoords.y = _Grid.abs_to_grid(_Ship.y);
 
 				//Terrain:
-				_jBlock = _BlockData.get_by_xy_role(_jPassingBlockCoords.x, _jPassingBlockCoords.y, 'terrain');
-				if(!_jBlock || !_jBlock.oBlock.hittest(_Grid.abs_to_rel(_Ship.x), _Grid.abs_to_rel(_Ship.y))){
+				_sKey = _BlockData.get_key_by_xy_role(_jPassingBlockCoords.x, _jPassingBlockCoords.y, 'terrain');
+				if(!_jTerrainBlocks[_sKey] || !_jTerrainBlocks[_sKey].hittest(_Grid.abs_to_rel(_Ship.x), _Grid.abs_to_rel(_Ship.y))){
 					_$document.trigger('race_stop');
 				}
 
 				//Checkpoints:
-				_jBlock = _BlockData.get_by_xy_role(_jPassingBlockCoords.x, _jPassingBlockCoords.y, 'checkpoint');
-				if(_jBlock && !_jBlock.bReached && _jBlock.oBlock.hittest(_Grid.abs_to_rel(_Ship.x), _Grid.abs_to_rel(_Ship.y))){
-					console.log(_jBlock);			
-					_jBlock.bReached = true;
-					_jBlock.oDisplay.goto_animation_and_play('cp1', 'pass');
-					//_$document.trigger('checkpoint_reached', {jBlock: $.extend({}, _jBlock)});
+				_sKey = _BlockData.get_key_by_xy_role(_jPassingBlockCoords.x, _jPassingBlockCoords.y, 'checkpoint');
+				if(_jCheckpoints[_sKey] && !_jCheckpoints[_sKey].bReached && _jTerrainBlocks[_sKey].hittest(_Grid.abs_to_rel(_Ship.x), _Grid.abs_to_rel(_Ship.y))){
+					_jCheckpoints[_sKey].bReached = true;
+					_$document.trigger('checkpoint_reached', _sKey);
+				}
+			},
+			tick: function tick(){
+				_iTickDeltaTime = 0.001*(Date.now() - _iTimestampLast);
+				requestAnimationFrame(h.on_tick, true);
+				_iTimestampLast = Date.now();
+			},
+			interpolate_tick: function interpolate_tick(iDT, iStep){
+				while(iDT > iStep){
+					_Ship.move(iStep);
+					m.perform_hittest();
+					iDT -= iStep;
+				}
+				if(iDT > 0){
+					_Ship.move(iDT);
+					m.perform_hittest();
 				}
 			},
 
+			// ------------------------------------------------------------------------------------
+			// CHECKPOINTS
+			// ------------------------------------------------------------------------------------
 			setup_checkpoints: function setup_checkpoints(){
 				for(var sBlockKey in _BlockData.content){
-					var jBlockData = _BlockData.content[sBlockKey];
-					if(jBlockData.role === 'checkpoint'){
-						_aCheckpointDisplays.push(sBlockKey);
-						_BlockData.content[sBlockKey].oDisplay = m.create_checkpoint_display(jBlockData);
+					if(_BlockData.content[sBlockKey].role === 'checkpoint'){
+						_jCheckpoints[sBlockKey] = {
+							oDisplay: m.create_checkpoint_display(sBlockKey),
+							bReached: false
+						};
 					}
 				}
-				console.log(_aCheckpointDisplays);
 			},
-
 			reset_checkpoints: function reset_checkpoints(){
-				for(_i = 0; _i < _aCheckpointDisplays.length; _i++){
-					_BlockData.content[_aCheckpointDisplays[_i]].bReached = false;
-					_BlockData.content[_aCheckpointDisplays[_i]].oDisplay.goto_animation_and_play('cp1', 'idle');
+				_aCheckpointDisplays = [];
+				for(var sBlockKey in _jCheckpoints){
+					_aCheckpointDisplays.push(sBlockKey);
+					_jCheckpoints[sBlockKey].bReached = false;
+					_jCheckpoints[sBlockKey].oDisplay.goto_animation_and_play('cp1', 'idle', Math.random()*60>>0);
 				}
 			},
-
-			add_checkpoint_objects: function add_checkpoint_objects(){
-			},
-
-			create_checkpoint_display: function create_checkpoint_display(jBlockData){
+			create_checkpoint_display: function create_checkpoint_display(sBlockKey){
 				var 
 					oCpDisplay,
 					oCpSsInstance,
@@ -253,29 +255,30 @@ $(document).ready(function(){
 				});
 				
 				oCpDisplay.position(
-					(jBlockData.x*jBlockData.oBlock.edge+(jBlockData.oBlock.edge-iCanvasWidth)/2)>>0,
-					(jBlockData.y*jBlockData.oBlock.edge+(jBlockData.oBlock.edge-iCanvasHeight)/2)>>0
+					(_BlockData.content[sBlockKey].x*_jTerrainBlocks[sBlockKey].edge+(_jTerrainBlocks[sBlockKey].edge-iCanvasWidth)/2)>>0,
+					(_BlockData.content[sBlockKey].y*_jTerrainBlocks[sBlockKey].edge+(_jTerrainBlocks[sBlockKey].edge-iCanvasHeight)/2)>>0
 				);
 
 				oCpDisplay.add_container('cp');
 				oCpSsInstance = m.create_sprite_instance('cp1');
 				oCpDisplay.add_instance(oCpSsInstance, 'cp1', 'cp');
 				oCpDisplay.position_instance(
-					'cp1', (oCpDisplay.iWidth/2)>>0, (oCpDisplay.iHeight/2)>>0, 0
+					'cp1', (oCpDisplay.iCanvasWidth/2)>>0, (oCpDisplay.iCanvasHeight/2)>>0, 0
 				);
+
 				return oCpDisplay;
 			},
+			// ------------------------------------------------------------------------------------
+
+			add_checkpoint_objects: function add_checkpoint_objects(){
+			},
+
 
 
 			transfer_terrain_blocks_to_img: function transfer_terrain_blocks_to_img(){
 				_$imgBg.attr('src', _$canvasBg[0].toDataURL());
 			},
 
-			tick: function tick(){
-				_oTimeTmp = +new Date - _oLastFrame;
-				requestAnimationFrame(h.on_tick);
-				_oLastFrame = +new Date;
-			}
 		},
 		h = {
 			on_window_resize: function on_window_resize(){
@@ -351,8 +354,7 @@ $(document).ready(function(){
 				}
 			},
 			on_map_loaded: function on_map_loaded(event, jBlocks){
-				_sLoadedBlockData = jBlocks.sBlocks;
-				_BlockData.decode_box_data(_sLoadedBlockData);
+				_BlockData.decode_box_data(jBlocks.sBlocks);
 
 				
 				_ColorProjector = new ColorProjector({
@@ -373,28 +375,32 @@ $(document).ready(function(){
 
 				_MapDisplay = new Map({
 					iStrokeOversize: _MAP.tiles.stroke_oversize,
-					iTilesize: 400,
-					jBlockData: _BlockData,
+					iTilesize: _MAP.tiles.edge.race,
 					sFaceUrl: _BLOCK_FACE_URL,
 					sSpritesheets: _SPRITESHEETS,
 					sSpritesheetUrl: _SPRITESHEET_URL,
 					sStrokeUrl: _BLOCK_STROKE_URL
 				});
+
+				var jBlockData;
+				for(var sBlockKey in _BlockData.content){
+					jBlockData = _BlockData.content[sBlockKey];
+					if(jBlockData.role === 'terrain'){
+						_MapDisplay.add_block(jBlockData.id, jBlockData.x, jBlockData.y, jBlockData.r);
+					}
+				}
+
+
 				m.update_canvas_size();
 				_MapDisplay.load_blocks(document.getElementById('map'));
 
 				m.draw_ship();
 				m.add_terrain_block_objects();
 				m.setup_checkpoints();
-				
-				setInterval(m.tick, 1000/120);
 
-
-				/*
+				//setInterval(m.tick, 1000/60);
 				createjs.Ticker.useRAF = true;
-				createjs.Ticker.setFPS(60);
-				*/
-
+				createjs.Ticker.setFPS(120);
 
 				_$document.trigger('map_drawn');
 			},
@@ -408,33 +414,44 @@ $(document).ready(function(){
 				m.start_race();
 			},
 
-			on_tick: function on_tick(){
+			on_tick: function on_tick(event, bCustomTick){
+				if(!bCustomTick){
+					_iTickDeltaTime = event.delta/1000;
+				}
+				console.log('ok');
+
 				if(_RACING){
-					_Ship.move(0.001*_oTimeTmp);
+					m.interpolate_tick(_iTickDeltaTime, 0.005)
 					m.update_camera();
-					m.perform_hittest();
-					_Clock.tick(_oTimeTmp);
+					_Clock.tick(_iTickDeltaTime);
 					_$clock.html(_Clock.get_formatted_time());
 				}
+
 				if(_RENDERING){
 					_ShipDisplay.oStage.update();
 					for(_i = 0; _i < _aCheckpointDisplays.length; _i++){
-						_BlockData.content[_aCheckpointDisplays[_i]].oDisplay.oStage.update();
+						_jCheckpoints[_aCheckpointDisplays[_i]].oDisplay.oStage.update();
 					}
 				}
-				$DEBUG.html(Math.round(1000/_oTimeTmp));
-
-				
+				$DEBUG.html(Math.round(1/_iTickDeltaTime));
 			},
 			on_explode: function on_explode(){
 				m.explode_ship();
 			},
 			on_race_stop: function on_race_stop(){
 				_RACING = false;
-				_Ship.freeze();
 				_$document.trigger('explode');
+				_Ship.freeze();
 			},
-			on_checkpoint_reached: function on_checkpoint_reached(){},
+			on_checkpoint_reached: function on_checkpoint_reached(event, sBlockKey){
+				_jCheckpoints[sBlockKey].oDisplay.goto_animation_and_play('cp1', 'pass');
+				var iDelay = (_SPRITESHEETS.cp1.animations.pass[1]-_SPRITESHEETS.cp1.animations.pass[0]+1)*1000/60;
+				(function(sBlockKey){
+					setTimeout(function(){
+						_aCheckpointDisplays.splice(_aCheckpointDisplays.indexOf(sBlockKey), 1);
+					}, iDelay);
+				})(sBlockKey);
+			},
 			on_race_start: function on_race_start(){},
 			on_race_finish: function on_race_finish(){}
 		};
