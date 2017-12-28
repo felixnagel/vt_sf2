@@ -3,101 +3,76 @@ parameters:
   -
     -
       block_id: clear_2
-      filename: clear_terrain_1.png
 
     -
       block_id: start_1
-      filename: start_1.png
 
     -
       block_id: cp1
-      filename: coke_sprite.png
 
   -
     -
       block_id: clear_1
-      filename: clear_terrain_1.png
 
     -
       block_id: e01    
-      filename: e01.png
 
     -
       block_id: e11
-      filename: e11.png
 
     -
       block_id: e12
-      filename: e12.png
 
     -
       block_id: e13
-      filename: e13.png
 
     -
       block_id: e21
-      filename: e21.png
 
     -
       block_id: e22
-      filename: e22.png
 
     -
       block_id: e23
-      filename: e23.png
 
     -
       block_id: c01
-      filename: c01.png
 
     -
       block_id: c02
-      filename: c02.png
 
     -
       block_id: c11
-      filename: c11.png
 
     -
       block_id: c12
-      filename: c12.png
 
     -
       block_id: c13
-      filename: c13.png
 
     -
       block_id: c21
-      filename: c21.png
 
     -
       block_id: c22
-      filename: c22.png
 
     -
       block_id: c23
-      filename: c23.png
 
     -
       block_id: s11
-      filename: s11.png
 
     -
       block_id: s12
-      filename: s12.png
 
     -
       block_id: s13
-      filename: s13.png
 
     -
       block_id: s21
-      filename: s21.png
 
     -
       block_id: s22
-      filename: s22.png
 
     -
       block_id: s23
-      filename: s23.png

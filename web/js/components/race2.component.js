@@ -16,7 +16,7 @@ $(document).ready(function(){
 		_SHIP = _$body.data('jc_ship'),
 		_SPRITESHEET_URL = _$body.data('sc_spritesheet_url'),
 		_SPRITESHEETS = _$body.data('jc_spritesheets'),
-		_USE_EASEL_TICK = false,
+		_USE_EASEL_TICK = true,
 
 		_Grid = new Grid(_MAP.tiles.edge.race),
 		_Ship,
@@ -191,6 +191,7 @@ $(document).ready(function(){
 				_jPassingBlockCoords.y = _Grid.abs_to_grid(_Ship.y);
 
 				//Terrain:
+				// @TODO
 				_sKey = _BlockData.get_key_by_xy_role(_jPassingBlockCoords.x, _jPassingBlockCoords.y, 'terrain');
 				if(!_jTerrainBlocks[_sKey] || !_jTerrainBlocks[_sKey].hittest(_Grid.abs_to_rel(_Ship.x), _Grid.abs_to_rel(_Ship.y))){
 					_$document.trigger('race_stop');

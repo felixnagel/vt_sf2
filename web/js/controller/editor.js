@@ -60,7 +60,6 @@ $(document).ready(function(){
 				}
 			},
 			replace_block: function replace_block(jEssentials){
-				console.log(_BlockData);
 				m.remove_block(jEssentials);
 				var 
 					$newBlock = m.get_proto_block(jEssentials.id).clone(),
@@ -73,11 +72,17 @@ $(document).ready(function(){
 				$newBlock.css({
 					top: _Grid.grid_to_snapped(jEssentials.y),
 					left: _Grid.grid_to_snapped(jEssentials.x),
-					zIndex: blockData.z
+					zIndex: 1
 				});
+				if(blockData.role !== 'terrain'){
+					$newBlock.css({
+						zIndex: 2
+					});
+				}
 				m.rotate_element($newBlock, jEssentials.r);
 
 				$newBlock.appendTo(_$innerGrid);
+				console.log($newBlock);
 
 				_BlockData.set(jEssentials, {$block: $newBlock});
 			},
