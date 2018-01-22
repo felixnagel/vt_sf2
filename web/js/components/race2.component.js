@@ -38,6 +38,7 @@ $(document).ready(function(){
 		_RENDERING = false,
 		_jPassingBlockCoords = {x: 0, y: 0, z: 0},
 		_jTerrainBlocks = {},
+		_jPassingBlock,
 
 		_iTimeStart = 0,
 		_iTimeCount = 0,
@@ -191,14 +192,13 @@ $(document).ready(function(){
 				_jPassingBlockCoords.y = _Grid.abs_to_grid(_Ship.y);
 
 				//Terrain:
-				// @TODO
-				_sKey = _BlockData.get_key_by_xy_role(_jPassingBlockCoords.x, _jPassingBlockCoords.y, 'terrain');
+				_sKey = _BlockData.create_key(_jPassingBlockCoords);
 				if(!_jTerrainBlocks[_sKey] || !_jTerrainBlocks[_sKey].hittest(_Grid.abs_to_rel(_Ship.x), _Grid.abs_to_rel(_Ship.y))){
 					_$document.trigger('race_stop');
 				}
 
 				//Checkpoints:
-				_sKey = _BlockData.get_key_by_xy_role(_jPassingBlockCoords.x, _jPassingBlockCoords.y, 'checkpoint');
+				_sKey = _BlockData.create_key(_jPassingBlockCoords);
 				if(_jCheckpoints[_sKey] && !_jCheckpoints[_sKey].bReached && _jTerrainBlocks[_sKey].hittest(_Grid.abs_to_rel(_Ship.x), _Grid.abs_to_rel(_Ship.y))){
 					_jCheckpoints[_sKey].bReached = true;
 					_$document.trigger('checkpoint_reached', _sKey);
@@ -299,28 +299,28 @@ $(document).ready(function(){
 				if(!actions.A && !actions.D){
 					if(actions.W){
 						if(_Ship.is_steering_left()){
-							console.log('1_left_to_straight');
+							//console.log('1_left_to_straight');
 							_ShipDisplay.goto_animation_and_play('ship', '1_left_to_straight');
 						}else{
 							if(_Ship.is_steering_right()){
-								console.log('1_right_to_straight');
+								//console.log('1_right_to_straight');
 								_ShipDisplay.goto_animation_and_play('ship', '1_right_to_straight');
 							}else{
-								console.log('1_straight');
+								//console.log('1_straight');
 								_ShipDisplay.goto_animation_and_play('ship', '1_straight');
 							}
 						}
 					}
 					if(!actions.W){
 						if(_Ship.is_steering_left()){
-							console.log('0_left_to_straight');
+							//console.log('0_left_to_straight');
 							_ShipDisplay.goto_animation_and_play('ship', '0_left_to_straight');
 						}else{
 							if(_Ship.is_steering_right()){
-								console.log('0_right_to_straight');
+								//console.log('0_right_to_straight');
 								_ShipDisplay.goto_animation_and_play('ship', '0_right_to_straight');
 							}else{
-								console.log('0_straight');
+								//console.log('0_straight');
 								_ShipDisplay.goto_animation_and_play('ship', '0_straight');
 							}
 						}
@@ -419,7 +419,6 @@ $(document).ready(function(){
 				if(!bCustomTick){
 					_iTickDeltaTime = event.delta/1000;
 				}
-				console.log('ok');
 
 				if(_RACING){
 					m.interpolate_tick(_iTickDeltaTime, 0.005)

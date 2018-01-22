@@ -1,7 +1,8 @@
-function BlockData(jBlockDefinitions){
+function BlockData(jBlockDefinitions, aRoles){
 	this.jBlockDefinitions = jBlockDefinitions;
 	this.layers = [];
 	this.content = {};
+	this.roles = aRoles;
 };
 BlockData.prototype = {
 	_D1: ':',
@@ -69,10 +70,12 @@ BlockData.prototype = {
 			
 		for(var i = 0; i < aBlocksData.length; i++){
 			var 
-				jEssentials = this.decode_block_data(aBlocksData[i]),
+				jEssentials = this._D2+jEssentials.z+this.decode_block_data(aBlocksData[i]),
 				jBlockData = this.create_block_data(jEssentials);
 
-			this.set(jBlockData);
+			if(this.roles.indexOf(jBlockData.role) !== -1){
+				this.set(jBlockData);
+			}
 		}
 	},
 

@@ -10,7 +10,8 @@ $(document).ready(function(){
 		_GRIDSIZE = _$body.data('jc_map').tiles.edge.editor,
 
 		_Grid = new Grid(_GRIDSIZE),
-		_BlockData = new BlockData(_BLOCKS),
+		_BlockData = new BlockData(_BLOCKS, ['terrain']),
+		_BlockDataCp = new BlockData(_BLOCKS, ['clear_terrain_1', 'clear_terrain_2', 'starting_position', 'checkpoint']),
 
 		_$blockProtos = $('#block-proto-container .block'),
 		_$brushes = $('#brush-container .brush'),
@@ -59,8 +60,11 @@ $(document).ready(function(){
 					_$paintBrushContainer.append($protoBlock.clone());
 				}
 			},
-			replace_block: function replace_block(jEssentials){
-				m.remove_block(jEssentials);
+	
+
+			replace_terrain_block: function replace_terrain_block(jEssentials){
+				m.remove_terrain_block(jEssentials);
+
 				var 
 					$newBlock = m.get_proto_block(jEssentials.id).clone(),
 					blockData = _BlockData.create_block_data(jEssentials);
@@ -74,20 +78,49 @@ $(document).ready(function(){
 					left: _Grid.grid_to_snapped(jEssentials.x),
 					zIndex: 1
 				});
-				if(blockData.role !== 'terrain'){
-					$newBlock.css({
-						zIndex: 2
-					});
-				}
+
 				m.rotate_element($newBlock, jEssentials.r);
 
 				$newBlock.appendTo(_$innerGrid);
-				console.log($newBlock);
 
 				_BlockData.set(jEssentials, {$block: $newBlock});
 			},
-			remove_block: function remove_block(jEssentials){
+
+			replace_cp_block: function replace_cp_block(jEssentials){
+				m.remove_cp_block(jEssentials);
+
+				var 
+					$newBlock = m.get_proto_block(jEssentials.id).clone(),
+					blockData = _BlockDataCp.create_block_data(jEssentials);
+
+				if(blockData.role === 'clear_terrain_1' || blockData.role === 'clear_terrain_2'){
+					return;
+				}
+
+				$newBlock.css({
+					top: _Grid.grid_to_snapped(jEssentials.y),
+					left: _Grid.grid_to_snapped(jEssentials.x),
+					zIndex: 2
+				});
+
+				m.rotate_element($newBlock, jEssentials.r);
+
+				$newBlock.appendTo(_$innerGrid);
+
+				_BlockDataCp.set(jEssentials, {$block: $newBlock});
+			},
+
+
+			replace_block: function replace_block(jEssentials){
+				if(_BLOCKS[jEssentials.id].role == 'terrain'){
+					m.replace_terrain_block(jEssentials);
+				}else{
+					m.replace_cp_block(jEssentials);
+				}
+			},
+			remove_terrain_block: function remove_terrain_block(jEssentials){
 				var storedBlockData = _BlockData.get(jEssentials);
+
 				if(storedBlockData !== undefined){
 					if(storedBlockData.$block){
 						storedBlockData.$block.remove();
@@ -95,9 +128,22 @@ $(document).ready(function(){
 					_BlockData.remove(jEssentials);
 				}			
 			},
+			remove_cp_block: function remove_cp_block(jEssentials){
+				var storedBlockData = _BlockDataCp.get(jEssentials);
+
+				if(storedBlockData !== undefined){
+					if(storedBlockData.$block){
+						storedBlockData.$block.remove();
+					}
+					_BlockDataCp.remove(jEssentials);
+				}			
+			},
 			delete_all_blocks: function delete_all_blocks(){
 				for(var sBlockKey in _BlockData.content){
-					m.remove_block(_BlockData.content[sBlockKey]);
+					m.remove_terrain_block(_BlockData.content[sBlockKey]);
+				}
+				for(var sBlockKey in _BlockDataCp.content){
+					m.remove_cp_block(_BlockDataCp.content[sBlockKey]);
 				}
 			}
 		},
@@ -211,8 +257,13 @@ $(document).ready(function(){
 			on_map_loaded: function on_map_loaded(event, oBlocks){
 				m.delete_all_blocks();
 				_BlockData.decode_box_data(oBlocks.sBlocks);
+				_BlockDataCp.decode_box_data(oBlocks.sBlocks);
+
 				for(var sBlockKey in _BlockData.content){
 					m.replace_block(_BlockData.content[sBlockKey]);
+				}
+				for(var sBlockKey in _BlockDataCp.content){
+					m.replace_block(_BlockDataCp.content[sBlockKey]);
 				}
 			}
 		};
