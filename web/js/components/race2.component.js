@@ -23,7 +23,8 @@ $(document).ready(function(){
 		_oTimes,
 		_Clock = new VtClock(),
 		_KeyController = new VtKeyController(),
-		_BlockData = new BlockData(_BLOCKS),
+		_BlockData = new BlockData(_BLOCKS, ['terrain']),
+		_BlockDataCp = new BlockData(_BLOCKS, ['starting_position', 'checkpoint']),
 		_MapDisplay,
 		_ShipDisplay,
 		_ColorProjector,
@@ -124,8 +125,8 @@ $(document).ready(function(){
 			reset_ship: function reset_ship(){
 				var jBlockData;
 				_Ship = new Ship(_SHIP);
-				for(var sBlockKey in _BlockData.content){
-					jBlockData = _BlockData.content[sBlockKey];
+				for(var sBlockKey in _BlockDataCp.content){
+					jBlockData = _BlockDataCp.content[sBlockKey];
 					if(jBlockData.role == 'starting_position'){
 						_Ship.x = _Grid.grid_to_snapped_centered(jBlockData.x);
 						_Ship.y = _Grid.grid_to_snapped_centered(jBlockData.y);
@@ -225,8 +226,8 @@ $(document).ready(function(){
 			// CHECKPOINTS
 			// ------------------------------------------------------------------------------------
 			setup_checkpoints: function setup_checkpoints(){
-				for(var sBlockKey in _BlockData.content){
-					if(_BlockData.content[sBlockKey].role === 'checkpoint'){
+				for(var sBlockKey in _BlockDataCp.content){
+					if(_BlockDataCp.content[sBlockKey].role === 'checkpoint'){
 						_jCheckpoints[sBlockKey] = {
 							oDisplay: m.create_checkpoint_display(sBlockKey),
 							bReached: false
@@ -256,8 +257,8 @@ $(document).ready(function(){
 				});
 				
 				oCpDisplay.position(
-					(_BlockData.content[sBlockKey].x*_jTerrainBlocks[sBlockKey].edge+(_jTerrainBlocks[sBlockKey].edge-iCanvasWidth)/2)>>0,
-					(_BlockData.content[sBlockKey].y*_jTerrainBlocks[sBlockKey].edge+(_jTerrainBlocks[sBlockKey].edge-iCanvasHeight)/2)>>0
+					(_BlockDataCp.content[sBlockKey].x*_jTerrainBlocks[sBlockKey].edge+(_jTerrainBlocks[sBlockKey].edge-iCanvasWidth)/2)>>0,
+					(_BlockDataCp.content[sBlockKey].y*_jTerrainBlocks[sBlockKey].edge+(_jTerrainBlocks[sBlockKey].edge-iCanvasHeight)/2)>>0
 				);
 
 				oCpDisplay.add_container('cp');
@@ -355,7 +356,7 @@ $(document).ready(function(){
 				}
 			},
 			on_map_loaded: function on_map_loaded(event, jBlocks){
-				_BlockData.decode_box_data(jBlocks.sBlocks);
+				_BlockDataCp.decode_box_data(jBlocks.sBlocks);
 
 				
 				_ColorProjector = new ColorProjector({
@@ -383,20 +384,19 @@ $(document).ready(function(){
 					sStrokeUrl: _BLOCK_STROKE_URL
 				});
 
+				_BlockData.decode_box_data(jBlocks.sBlocks);
 				var jBlockData;
 				for(var sBlockKey in _BlockData.content){
 					jBlockData = _BlockData.content[sBlockKey];
-					if(jBlockData.role === 'terrain'){
-						_MapDisplay.add_block(jBlockData.id, jBlockData.x, jBlockData.y, jBlockData.r);
-					}
+					_MapDisplay.add_block(jBlockData.id, jBlockData.x, jBlockData.y, jBlockData.r);
 				}
-
+				m.add_terrain_block_objects();
 
 				m.update_canvas_size();
 				_MapDisplay.load_blocks(document.getElementById('map'));
 
 				m.draw_ship();
-				m.add_terrain_block_objects();
+
 				m.setup_checkpoints();
 
 				//setInterval(m.tick, 1000/60);

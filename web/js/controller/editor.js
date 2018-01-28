@@ -11,7 +11,7 @@ $(document).ready(function(){
 
 		_Grid = new Grid(_GRIDSIZE),
 		_BlockData = new BlockData(_BLOCKS, ['terrain']),
-		_BlockDataCp = new BlockData(_BLOCKS, ['clear_terrain_1', 'clear_terrain_2', 'starting_position', 'checkpoint']),
+		_BlockDataCp = new BlockData(_BLOCKS, ['starting_position', 'checkpoint']),
 
 		_$blockProtos = $('#block-proto-container .block'),
 		_$brushes = $('#brush-container .brush'),
@@ -69,7 +69,7 @@ $(document).ready(function(){
 					$newBlock = m.get_proto_block(jEssentials.id).clone(),
 					blockData = _BlockData.create_block_data(jEssentials);
 
-				if(blockData.role === 'clear_terrain_1' || blockData.role === 'clear_terrain_2'){
+				if(blockData.id === 'clear_terrain'){
 					return;
 				}
 
@@ -93,7 +93,7 @@ $(document).ready(function(){
 					$newBlock = m.get_proto_block(jEssentials.id).clone(),
 					blockData = _BlockDataCp.create_block_data(jEssentials);
 
-				if(blockData.role === 'clear_terrain_1' || blockData.role === 'clear_terrain_2'){
+				if(blockData.role === 'clear_checkpoint'){
 					return;
 				}
 
@@ -112,7 +112,7 @@ $(document).ready(function(){
 
 
 			replace_block: function replace_block(jEssentials){
-				if(_BLOCKS[jEssentials.id].role == 'terrain'){
+				if(jEssentials.role == 'terrain'){
 					m.replace_terrain_block(jEssentials);
 				}else{
 					m.replace_cp_block(jEssentials);
@@ -189,12 +189,18 @@ $(document).ready(function(){
 					$this = $(this),
 					$protoBlock = m.get_activated_proto_block(),
 					offset = __hlpr.get_target_event_offset(event, $this),
-					jEssentials = __hlpr.create_essentials(
-						$protoBlock.data('block_id'),
-						_Grid.abs_to_grid(offset.left),
-						_Grid.abs_to_grid(offset.top),
-						$protoBlock.data('rotation')
-					);
+					jEssentials = {
+						id: $protoBlock.data('block_id'),
+						x: _Grid.abs_to_grid(offset.left),
+						y: _Grid.abs_to_grid(offset.top),
+						r: $protoBlock.data('rotation')
+					};
+
+				jEssentials = _BlockData.create_block_data(jEssentials) || _BlockDataCp.create_block_data(jEssentials);
+					 
+				if(jEssentials.id === undefined){
+					return;
+				}
 
 				m.replace_block(jEssentials);
 			},
@@ -241,11 +247,14 @@ $(document).ready(function(){
 				});
 			},
 			on_click_save_button: function on_click_save_button(){
+				console.log(_BlockData.content);
+				console.log(_BlockDataCp.content);
+
 				$.ajax({
 					type: 'POST',
 					url: $('body').data('ajax_url_save_map'),
 					data: {
-						blocks: _BlockData.encode_box_data(_BlockData.content),
+						blocks: _BlockData.encode_box_data(_BlockDataCp.content),
 						title: 'test'
 					},
 					success: function(data){}
@@ -257,11 +266,11 @@ $(document).ready(function(){
 			on_map_loaded: function on_map_loaded(event, oBlocks){
 				m.delete_all_blocks();
 				_BlockData.decode_box_data(oBlocks.sBlocks);
-				_BlockDataCp.decode_box_data(oBlocks.sBlocks);
-
 				for(var sBlockKey in _BlockData.content){
 					m.replace_block(_BlockData.content[sBlockKey]);
 				}
+
+				_BlockDataCp.decode_box_data(oBlocks.sBlocks);
 				for(var sBlockKey in _BlockDataCp.content){
 					m.replace_block(_BlockDataCp.content[sBlockKey]);
 				}

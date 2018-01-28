@@ -36,6 +36,9 @@ BlockData.prototype = {
 	},
 
 	create_block_data: function create_block_data(jEssentials){
+		if(this.jBlockDefinitions[jEssentials.id] === undefined){
+			return false;
+		}
 		for(var key in this.jBlockDefinitions[jEssentials.id]){
 			jEssentials[key] = this.jBlockDefinitions[jEssentials.id][key];
 		}
@@ -49,10 +52,17 @@ BlockData.prototype = {
 	},
 
 	encode_box_data: function encode_box_data(jBlocksData){
-		var encodedBlocks = [];
-		for(var key in jBlocksData){
+		var 
+			key,
+			encodedBlocks = [];
+		
+		for(key in this.content){
+			encodedBlocks.push(this.encode_block_data(this.content[key]));
+		}
+		for(key in jBlocksData){
 			encodedBlocks.push(this.encode_block_data(jBlocksData[key]));
 		}
+
 		return encodedBlocks.join(this._D2);
 	},
 
@@ -67,12 +77,11 @@ BlockData.prototype = {
 		var aBlocksData = sBoxData.split(this._D2);
 
 		this.content = {};
-			
 		for(var i = 0; i < aBlocksData.length; i++){
 			var 
-				jEssentials = this._D2+jEssentials.z+this.decode_block_data(aBlocksData[i]),
+				jEssentials = this.decode_block_data(aBlocksData[i]),
 				jBlockData = this.create_block_data(jEssentials);
-
+			
 			if(this.roles.indexOf(jBlockData.role) !== -1){
 				this.set(jBlockData);
 			}

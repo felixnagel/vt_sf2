@@ -2,7 +2,7 @@ parameters:
   app.brushes:
   -
     -
-      block_id: clear_2
+      block_id: clear_checkpoint
 
     -
       block_id: start_1
@@ -12,7 +12,7 @@ parameters:
 
   -
     -
-      block_id: clear_1
+      block_id: clear_terrain
 
     -
       block_id: e01    

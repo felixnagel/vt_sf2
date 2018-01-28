@@ -1,10 +1,10 @@
 parameters:
     app.blocks:
-        clear_1:
-            role: clear_terrain_1
+        clear_terrain:
+            role: terrain
 
-        clear_2:
-            role: clear_terrain_2
+        clear_checkpoint:
+            role: checkpoint
 
         start_1:
             role: starting_position
