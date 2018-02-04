@@ -14,13 +14,14 @@ $(document).ready(function(){
 					}
 				});
 			},
-			on_submit_times: function on_submit_times(event, jTimes){
+			on_submit_times: function on_submit_times(event, jData){
+				console.log(jData.times);
 				$.ajax({
 					type: 'GET',
 					url: $('body').data('ajax_url_submit_times'),
-					data: {t: jTimes.t.join('|')},
+					data: {aTimes: jData.times},
 					success: function(sResponse){
-						console.log(sResponse);
+						//console.log(sResponse);
 					}
 				});
 			},

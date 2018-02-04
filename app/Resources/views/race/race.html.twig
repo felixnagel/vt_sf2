@@ -17,13 +17,20 @@
     data-jc_spritesheets="{{ aC_spritesheets|json_encode }}"
     data-jc_map="{{ aC_map|json_encode }}"
     data-jc_ship="{{ aC_ship|json_encode }}"
+    data-j_times="{{ aTimes|json_encode }}"
 {% endblock %}
 
 {% block body %}
-    <div id="game-canvas"> 
+    <div class="" id="game-canvas"> 
         <div id="clock-container">
             <div id="clock"></div>
         </div>
+        <div class="lnB-centered-container-wrapper" id="hud-centered">
+            <div class="lnB-centered-container">
+                <div id="hud-centered-text" class="fade-out-quick"></div>
+            </div>
+        </div>
+
         <span id="debug" style="position:absolute; top:0; left:0; color:red; z-index:100;"></span>
         <div id="spotlight"></div>
         <div id="camera-container">
@@ -33,8 +40,13 @@
         </div>
     </div>
 
-{% endblock %}
+    <div class="hud-right-box lnB-p12 lnB-display-none" id="hud-top-box-proto">
+        <div class="lnB-centered-container-wrapper">
+            <div class="lnB-centered-container hud-top-box-content"></div>
+        </div>
+    </div>
 
+{% endblock %}
 
 {% block javascripts %}
     <script src="{{ asset('js/lib/easeljs-0.8.2.min.js') }}"></script>

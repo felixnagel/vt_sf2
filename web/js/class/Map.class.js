@@ -65,6 +65,12 @@ Map.prototype = {
 
 		oStage.update();
 		this._oImg.src = oCanvas.toDataURL('image/png');
+		this._oImg.onload = function(){
+			setTimeout(function(){
+				var event = new Event('VtMapRendered');
+				window.dispatchEvent(event);
+			}, 1000);
+		};
 	},
 	update_camera: function update_camera(oMapContainer, oCameraContainer, x, y, vxRel, vyRel){
 		oMapContainer.style.transform = 'translate('+ ((0.5*this.iViewportWidth - x) >> 0) + 'px, '+ ((0.5*this.iViewportHeight - y) >> 0) +'px)';
@@ -82,7 +88,7 @@ Map.prototype = {
 	},
 	on_image_loaded: function on_image_loaded(iProgressionStatus){
 		if(iProgressionStatus === 1){
-			console.log('all faces/strokes loaded!');
+			//console.log('all faces/strokes loaded!');
 			this.draw_on_canvas();
 		}
 	},

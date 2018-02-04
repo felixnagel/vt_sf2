@@ -49,6 +49,7 @@ class DefaultController extends Controller{
         }
         return $oTimes;
     }
+    /*
     protected function _store_times(){
         $iUserId = $this->get('security.token_storage')->getToken()->getUser()->getId();
         $iMapId = $this->_get_current_map();
@@ -62,4 +63,5 @@ class DefaultController extends Controller{
         }
         return $oTimes->getCheckpointTimes();
     }
+    */
 }

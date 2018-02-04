@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity
  * @ORM\Table(name="vt_times")
+ * @ORM\HasLifecycleCallbacks
  */
 class Times{
 	/**
@@ -28,11 +29,11 @@ class Times{
 	 */
 	private $playerId;
     /**
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\Column(type="float", nullable=true)
      */
     private $finishTime;
 	/**
-	 * @ORM\Column(type="text", nullable=true)
+	 * @ORM\Column(type="simple_array", nullable=true)
 	 */
 	private $checkpointTimes;
 
@@ -122,7 +123,7 @@ class Times{
     /**
      * Set finishTime
      *
-     * @param integer $finishTime
+     * @param float $finishTime
      *
      * @return Times
      */
@@ -136,7 +137,7 @@ class Times{
     /**
      * Get finishTime
      *
-     * @return integer
+     * @return float
      */
     public function getFinishTime()
     {
@@ -146,7 +147,7 @@ class Times{
     /**
      * Set checkpointTimes
      *
-     * @param string $checkpointTimes
+     * @param array $checkpointTimes
      *
      * @return Times
      */
@@ -159,31 +160,20 @@ class Times{
     /**
      * Get checkpointTimes
      *
-     * @return string
+     * @return array
      */
     public function getCheckpointTimes()
     {
         return $this->checkpointTimes;
     }
 
-    private function _extract_checkpoint_times($sCheckpointTimes){
-        preg_match_all('=(\d+([^\d]))+=', $sCheckpointTimes, $aMatches);
-        $sDelimiter = $aMatches[2][0];
-        return explode($sDelimiter, $sCheckpointTimes);
-    }
-    private function _extract_finish_time($sCheckpointTimes){
-        return array_pop(($this->_extract_checkpoint_times($sCheckpointTimes)));
-    }
-    public function update_times($sNewCheckpointTimes){
-        $iNewFinishTime = $this->_extract_finish_time($sNewCheckpointTimes);
-        $bIsImprovement = !$this->finishTime || $iNewFinishTime < $this->finishTime;
-
-        if($bIsImprovement){
-            $this->setFinishTime($iNewFinishTime);
-            $this->setCheckpointTimes($sNewCheckpointTimes);
-            $this->setCreatedAt(new \DateTime());
-        }
-
-        return $bIsImprovement;
+    /**
+     * Triggered on update
+     * @ORM\PreUpdate
+     * @ORM\PrePersist
+     */
+    public function onPreUpdate()
+    {
+        $this->createdAt = new \DateTime('now');
     }
 }

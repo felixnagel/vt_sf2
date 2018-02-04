@@ -10,34 +10,38 @@ VtClock.prototype = {
 	},
 	tick: function tick(iS){
 		this._iS += iS;
-		this._sFormattedTime = this.get_minutes((this._iS/60)%60<<0) + ':' + this.get_seconds(this._iS<<0) + ':' + this.get_milliseconds((this._iS*1000)%1000<<0);
+	},
+	format_time: function format_time(iS){
+		var sign = '';
+		if(iS < 0){
+			sign = '-';
+			iS = Math.abs(iS);
+		}else{
+			if(iS > 0){
+				sign = '+';
+			}
+		}
+		return sign + ' ' + this.get_2digits((iS/60)%60<<0) + ':' + this.get_2digits(iS<<0) + ':' + this.get_2digits((iS*1000)%1000<<0);
 	},
 	get_formatted_time: function get_formatted_time(){
-		return this._sFormattedTime;
+		return this.get_2digits(this.get_minutes()) + ':' + this.get_2digits(this.get_seconds()) + ':' + this.get_2digits(this.get_milliseconds());
 	},
-	get_time: function get_time(){
+	
+	get_milliseconds: function get_milliseconds(){
+		return (this._iS*1000)%1000<<0;
+	},
+	get_seconds: function get_seconds(){
 		return this._iS;
 	},
-	get_minutes: function get_minutes(minutes){
-		if(minutes < 10){
-			minutes = '0'+minutes;
-		}
-		return minutes;
+	get_minutes: function get_minutes(){
+		return (this._iS/60)%60<<0;
 	},
-	get_seconds: function get_seconds(seconds){
-		if(seconds < 10){
-			seconds = '0'+seconds;
+	get_2digits: function get_2digits(iTime){
+		if(iTime < 10 && iTime > -9){
+			iTime = '0'+iTime;
 		}else{
-			seconds += '';
+			iTime += '';
 		}
-		return seconds.substring(0, 2);
+		return iTime.substring(0,2);
 	},
-	get_milliseconds: function get_milliseconds(milliseconds){
-		if(milliseconds < 10){
-			milliseconds = '0'+milliseconds;
-		}else{
-			milliseconds += '';
-		}
-		return milliseconds.substring(0, 2);
-	}
 };

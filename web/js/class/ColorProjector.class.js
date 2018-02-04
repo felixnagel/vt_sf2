@@ -38,7 +38,7 @@ ColorProjector.prototype = {
 
 	iRotation: false,
 	iConeWidth: 2/3*Math.PI,
-	iShadowStrength: 10,
+	iShadowStrength: 4,
 
 	sMode: 1,
 
@@ -104,12 +104,11 @@ ColorProjector.prototype = {
 		return 'rgb('+this._iR+','+this._iG+','+this._iB+')';
 	},
 	get_shadow: function get_shadow(){
-
-		return '4px 4px 0 rgba(0, 0, 0, 1)';
+		//return '4px 4px 0 rgba(0, 0, 0, 1)';
 		return this.iShadowStrength*this.rotX(-Math.PI)+'px '+this.iShadowStrength*this.rotY(-Math.PI)+'px 0 rgba(0, 0, 0, 1)';
 		return this.iShadowStrength*this.rotX(-Math.PI)+'px '+this.iShadowStrength*this.rotY(-Math.PI)+'px 0 rgba(255, 255, 255, 1)';
 	},
 	get_transform: function get_transform(){
-		return 'rotateX('+this._iY*10+'deg)' + ' ' + 'rotateY('+this._iX*-10+'deg)';
+		return 'rotateX('+this._iY*12+'deg)' + ' ' + 'rotateY('+this._iX*-12+'deg)';
 	},
 };

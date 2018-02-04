@@ -5,13 +5,18 @@ $(document).ready(function(){
 		_$document = $(document),
 		_$body = $('body'),
 		_$window = $(window),
-		_$clock = $('#clock'),
+		_$map = $('#map'),
 		
+		_$clock = $('#clock'),
+		_$hudCenteredText = $('#hud-centered-text'),
 		_$gameCanvas = $('#game-canvas'),
+		_$hudContainer = $('#hud-right-container'),
+		_$hudRightBoxProto = $('#hud-right-box-proto'),
 
 		_BLOCK_FACE_URL = _$body.data('sc_block_face_url'),
 		_BLOCK_STROKE_URL = _$body.data('sc_block_stroke_url'),
 		_BLOCKS = _$body.data('jc_blocks'),
+		_TIMES = _$body.data('j_times'),
 		_MAP = _$body.data('jc_map'),
 		_SHIP = _$body.data('jc_ship'),
 		_SPRITESHEET_URL = _$body.data('sc_spritesheet_url'),
@@ -20,7 +25,7 @@ $(document).ready(function(){
 
 		_Grid = new Grid(_MAP.tiles.edge.race),
 		_Ship,
-		_oTimes,
+		_oTimes, //TODO
 		_Clock = new VtClock(),
 		_KeyController = new VtKeyController(),
 		_BlockData = new BlockData(_BLOCKS, ['terrain']),
@@ -37,7 +42,7 @@ $(document).ready(function(){
 		_jCheckpoints = {},
 		_RACING = false,
 		_RENDERING = false,
-		_jPassingBlockCoords = {x: 0, y: 0, z: 0},
+		_jPassingBlockCoords = {x: 0, y: 0, xRel: 0, yRel: 0},
 		_jTerrainBlocks = {},
 		_jPassingBlock,
 
@@ -48,7 +53,7 @@ $(document).ready(function(){
 		_iTimestampLast = Date.now(),
 
 		_i = 0,
-		_sKey = '',
+		_sPassingBlockKey = '',
 
 
 	VAR_END;
@@ -71,6 +76,7 @@ $(document).ready(function(){
 				}
 
 				window.addEventListener('VtKeyController', h.on_key_controller);
+				window.addEventListener('VtMapRendered', h.on_map_rendered);
 				_$document.on('checkpoint_reached', h.on_checkpoint_reached);
 				_$document.on('race_restart', h.on_race_restart);
 				_$document.on('race_stop', h.on_race_stop);
@@ -159,17 +165,38 @@ $(document).ready(function(){
 				}
 			},
 
-			prepare_race_start: function prepare_race_start(){
+			start_race: function start_race(){
 				m.reset_ship();
 				m.update_camera();
 				m.reset_checkpoints();
 				_Clock.set_null();
-				_$document.trigger('race_start_prepared');
-			},
+				_$clock.html(_Clock.get_formatted_time());
 
-			start_race: function start_race(){
-				_RACING = true;
+				if(_oTimes === undefined){
+					_oTimes = new Times({
+						aPersonalBestTimes: _TIMES || [],
+						iCheckpointCount: _aCheckpointDisplays.length
+					});
+				}
+				_oTimes.reset();
+
 				_RENDERING = true;
+				
+				$('#spotlight').addClass('startup');
+				m.hud_show_centered_content('READY?');
+				setTimeout(function(){
+					m.hud_show_centered_content('3');
+					setTimeout(function(){
+						m.hud_show_centered_content('2');
+						setTimeout(function(){
+							m.hud_show_centered_content('1');
+							setTimeout(function(){
+								m.hud_show_centered_content('GO!');
+								_RACING = true;
+							}, 1000);
+						}, 1000);
+					}, 1000);
+				}, 1000);
 			},
 
 
@@ -183,26 +210,35 @@ $(document).ready(function(){
  				_ColorProjector.calc_rgb(_Ship.vxRel, _Ship.vyRel);
 				_$gameCanvas[0].style.backgroundColor = _ColorProjector.get_rgb();
 				_$clock[0].style.textShadow = _ColorProjector.get_shadow();
+				_$clock[0].style.webkitTransform  = _ColorProjector.get_transform();
+				
 
  				_ColorProjector2.calc_rgb(_Ship.vxRel, _Ship.vyRel);
  				
 				_$clock[0].style.color = _ColorProjector2.get_rgb();
 			},
 			perform_hittest: function perform_hittest(){
-				_jPassingBlockCoords.x = _Grid.abs_to_grid(_Ship.x);
-				_jPassingBlockCoords.y = _Grid.abs_to_grid(_Ship.y);
-
+				_sPassingBlockKey = _BlockData.create_key(_jPassingBlockCoords);
+				
 				//Terrain:
-				_sKey = _BlockData.create_key(_jPassingBlockCoords);
-				if(!_jTerrainBlocks[_sKey] || !_jTerrainBlocks[_sKey].hittest(_Grid.abs_to_rel(_Ship.x), _Grid.abs_to_rel(_Ship.y))){
+				if(
+					!_jTerrainBlocks[_sPassingBlockKey]
+					||
+					!_jTerrainBlocks[_sPassingBlockKey].hittest(_jPassingBlockCoords.xRel, _jPassingBlockCoords.yRel)
+				){
 					_$document.trigger('race_stop');
 				}
 
 				//Checkpoints:
-				_sKey = _BlockData.create_key(_jPassingBlockCoords);
-				if(_jCheckpoints[_sKey] && !_jCheckpoints[_sKey].bReached && _jTerrainBlocks[_sKey].hittest(_Grid.abs_to_rel(_Ship.x), _Grid.abs_to_rel(_Ship.y))){
-					_jCheckpoints[_sKey].bReached = true;
-					_$document.trigger('checkpoint_reached', _sKey);
+				if(
+					_jCheckpoints[_sPassingBlockKey]
+					&&
+					!_jCheckpoints[_sPassingBlockKey].bReached
+					&&
+					_jTerrainBlocks[_sPassingBlockKey].hittest(_jPassingBlockCoords.xRel, _jPassingBlockCoords.yRel)
+				){
+					_jCheckpoints[_sPassingBlockKey].bReached = true;
+					_$document.trigger('checkpoint_reached');
 				}
 			},
 			tick: function tick(){
@@ -213,14 +249,24 @@ $(document).ready(function(){
 			interpolate_tick: function interpolate_tick(iDT, iStep){
 				while(iDT > iStep){
 					_Ship.move(iStep);
+					m.update_block_coords();
 					m.perform_hittest();
 					iDT -= iStep;
 				}
 				if(iDT > 0){
 					_Ship.move(iDT);
+					m.update_block_coords();
 					m.perform_hittest();
 				}
 			},
+			update_block_coords: function update_block_coords(){
+				_jPassingBlockCoords.x = _Grid.abs_to_grid(_Ship.x);
+				_jPassingBlockCoords.y = _Grid.abs_to_grid(_Ship.y);
+				_jPassingBlockCoords.xRel = _Grid.abs_to_rel(_Ship.x);
+				_jPassingBlockCoords.yRel = _Grid.abs_to_rel(_Ship.y);
+
+			},
+
 
 			// ------------------------------------------------------------------------------------
 			// CHECKPOINTS
@@ -234,12 +280,14 @@ $(document).ready(function(){
 						};
 					}
 				}
+
 			},
 			reset_checkpoints: function reset_checkpoints(){
 				_aCheckpointDisplays = [];
 				for(var sBlockKey in _jCheckpoints){
 					_aCheckpointDisplays.push(sBlockKey);
 					_jCheckpoints[sBlockKey].bReached = false;
+					clearTimeout(_jCheckpoints[sBlockKey].timeoutReference);
 					_jCheckpoints[sBlockKey].oDisplay.goto_animation_and_play('cp1', 'idle', Math.random()*60>>0);
 				}
 			},
@@ -272,14 +320,18 @@ $(document).ready(function(){
 			},
 			// ------------------------------------------------------------------------------------
 
-			add_checkpoint_objects: function add_checkpoint_objects(){
-			},
-
-
 
 			transfer_terrain_blocks_to_img: function transfer_terrain_blocks_to_img(){
 				_$imgBg.attr('src', _$canvasBg[0].toDataURL());
 			},
+
+			hud_show_centered_content: function hud_show_centered_content(sContent){
+				_$hudCenteredText.removeClass('fading-out-quick').empty();
+				setTimeout(function(){
+					_$hudCenteredText.html(sContent);
+					_$hudCenteredText.addClass('fading-out-quick');
+				}, 10);
+			}
 
 		},
 		h = {
@@ -357,10 +409,9 @@ $(document).ready(function(){
 			},
 			on_map_loaded: function on_map_loaded(event, jBlocks){
 				_BlockDataCp.decode_box_data(jBlocks.sBlocks);
-
 				
 				_ColorProjector = new ColorProjector({
-					sMode: 2,
+					sMode: 1,
 					iPhiOffset: 0,
 					iRMax:255,
 					iGMax:255,
@@ -369,7 +420,7 @@ $(document).ready(function(){
 				});
 				_ColorProjector2 = new ColorProjector({
 					sMode: 2,
-					iPhiOffset: Math.PI,
+					iPhiOffset: 0*Math.PI,
 					iRMax:255,
 					iGMax:255,
 					iBMax: 255
@@ -405,11 +456,8 @@ $(document).ready(function(){
 
 				_$document.trigger('map_drawn');
 			},
-			on_map_drawn: function on_map_drawn(){
-				m.prepare_race_start();
-			},
 			on_race_restart: function on_race_restart(){
-				m.prepare_race_start();
+				m.start_race();
 			},
 			on_race_start_prepared: function on_race_start_prepared(){
 				m.start_race();
@@ -443,17 +491,29 @@ $(document).ready(function(){
 				_$document.trigger('explode');
 				_Ship.freeze();
 			},
-			on_checkpoint_reached: function on_checkpoint_reached(event, sBlockKey){
-				_jCheckpoints[sBlockKey].oDisplay.goto_animation_and_play('cp1', 'pass');
+			on_checkpoint_reached: function on_checkpoint_reached(){
+				_jCheckpoints[_sPassingBlockKey].oDisplay.goto_animation_and_play('cp1', 'pass');
 				var iDelay = (_SPRITESHEETS.cp1.animations.pass[1]-_SPRITESHEETS.cp1.animations.pass[0]+1)*1000/60;
 				(function(sBlockKey){
-					setTimeout(function(){
+					_jCheckpoints[sBlockKey].timeoutReference = setTimeout(function(){
 						_aCheckpointDisplays.splice(_aCheckpointDisplays.indexOf(sBlockKey), 1);
 					}, iDelay);
-				})(sBlockKey);
+				})(_sPassingBlockKey);
+
+				var jCpResult = _oTimes.reach(_Clock.get_seconds());
+				console.log(jCpResult);
+				m.hud_show_centered_content(_Clock.format_time(jCpResult.iPersonalDelta));
+				
+				if(jCpResult.bIsFinish){
+					_$document.trigger('race_finish');
+					if(jCpResult.bIsImprovement){
+						_$document.trigger('submit_times', {times: _oTimes.aCurrentTimes});
+					}
+				}
 			},
-			on_race_start: function on_race_start(){},
-			on_race_finish: function on_race_finish(){}
+			on_map_rendered: function on_map_rendered(){
+				_$document.trigger('race_start_prepared');
+			}
 		};
 
 	_$document.on('race_init', m.init);

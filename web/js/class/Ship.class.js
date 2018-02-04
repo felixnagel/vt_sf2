@@ -1,5 +1,5 @@
 function Ship(settings){
-	console.log(settings);
+	//console.log(settings);
 
 	/**
 	 * settings

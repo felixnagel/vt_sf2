@@ -25,6 +25,7 @@ class ValidateController extends DefaultController implements AuthentificatedCon
             'aC_map' => $this->container->getParameter('app.map'),
             'aC_ship' => $this->container->getParameter('app.ship'),
             'aC_spritesheets' => $this->container->getParameter('app.spritesheets'),
+            'aTimes' => $this->_get_times()->getCheckpointTimes(),
         ];
 
         //return $this->render('race/validate.html.twig', $aTplData);
@@ -49,23 +50,28 @@ class ValidateController extends DefaultController implements AuthentificatedCon
             ));
         }
 
-        $times = $request->get('t');
-        if(!is_string($times) || !$times){
+        $times = $request->get('aTimes');
+        if(!is_array($times) || !$times){
             $sTimes = serialize($times);
             throw new \Exception(sprintf(
                 'Corrupt times string t given! | user_id[%s], map_id[%s], t[%s]', $iUserId, $oMap->getId(), $sTimes
             ));
         }
-        $sTimes = $times;
+        $aTimes = $times;
+        $iFinishTime = $aTimes[count($aTimes)-1];
 
         $oTimes = $this->_get_times();
-        $bIsImprovement = $oTimes->update_times($sTimes);
+        $aOldCheckpointTimes = $oTimes->getCheckpointTimes();
 
-        if($bIsImprovement){
+        if(!$aOldCheckpointTimes || $oTimes->getFinishTime() > $iFinishTime){
+            $oTimes->setCheckpointTimes($aTimes);
+            $oTimes->setFinishTime($iFinishTime);
+
             $oEm = $this->getDoctrine()->getManager();
             $oEm->persist($oTimes);
             $oEm->flush();
         }
+
         return new Response;
     }
     /**

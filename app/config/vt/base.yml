@@ -18,9 +18,9 @@ parameters:
 
   app.ship:
     mass: 1
-    friction: 1
+    friction: 0.95
     handling: 360 # degree per second
-    v_max: 1500 # px per second
+    v_max: 1600 # px per second
     rotation: 0
 
 
