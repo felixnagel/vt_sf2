@@ -1,19 +1,8 @@
 html, body{
 	width:100%;
 	height:100%;
-	
-font-family: 'Nosifer', cursive;
-font-family: 'Stalinist One', cursive;
-font-family: 'Quicksand', cursive;
-font-family: 'Fugaz One', cursive;
-
-
-
-
-
-
+	font-family: 'Fugaz One', cursive;
 }
-
 
 #game-canvas{
 	position:relative;
@@ -22,6 +11,22 @@ font-family: 'Fugaz One', cursive;
 	overflow:hidden;
 	background-color:#000000;
 	background-image:url('../images/noisy-texture-300x300-o2-d10-c-f34379-t1.png');
+	filter:grayscale(0);
+	transition:filter 3.0s;
+}
+#game-canvas.blurred{
+	filter:grayscale(1);
+	transition:filter 0.3s;
+}
+
+
+#hud-container{
+	position:absolute;
+	top:0;
+	left:0;
+	right:0;
+	bottom:0;
+	z-index:11;
 }
 #clock-container{
 	position:absolute;
@@ -29,15 +34,11 @@ font-family: 'Fugaz One', cursive;
 	left:0;
 	right:0;
 	height:150px;
-	z-index:11;
-	abackground-color:rgba(255, 255, 255, 0.1);
-	abackground-color:rgba(0, 0, 0, 0.5);
+	z-index:12;
 }
 #clock{
 	position:absolute;
 	left:50%;
-	top:0px;
-	width:4.5em;
 	margin-left:-2.25em;
 	font-size:150px;
 	color:#FFFFFF;
@@ -68,14 +69,42 @@ font-family: 'Fugaz One', cursive;
 	z-index:10;
 }
 
+#menu-top{
+	transition:opacity 0.3s;
+	opacity:0;
+	position:absolute;
+	top:0;
+	bottom:0;
+	height:100%;
+	left:0;
+	right:0;
+	z-index:20;
+	background-color:#FFFFFF;
+}
+#menu-top.visible{
+	transition:opacity 0.3s 0.7s;
+	opacity:1;
+}
+
+
 
 #map-container canvas{
 	z-index:10;
 }
 #hud-centered-text{
-	z-index:12;
-	position:relative;
+	avisibility:hidden;
+	color:#000;
 	font-size:5em;
+	opacity:1;
+	position:relative;
+	top:-2.0em;
+	z-index:12;
+}
+#hud-centered-text.green{
+	color:#00FF00;
+}
+#hud-centered-text.red{
+	color:#FF0000;
 }
 #hud-right-container{
 	vertical-align:top;
@@ -84,17 +113,46 @@ font-family: 'Fugaz One', cursive;
 	background-color:#000000;
 	/*background-image:url('../images/noisy-texture-300x300-o2-d10-c-f34379-t1.png');*/
 }
-.fade-out-quick{
-	atransform: scale(1);
-	opacity:0.5;
-	avisibility:hidden;
-	top:-2em;
-}
-.fade-out-quick.fading-out-quick{
-	transition: opacity 2s;
-	
-	atransform: scale(0.95);
+#hud-centered-text.fade-out{
+	transition: opacity 1s ease-out, top 1s ease-out;
 	opacity:0;
 	avisibility:visible;
 	top:-2.5em;
+}
+
+#menu-top .menu-title{
+	position:absolute;
+	top:0;
+	left:0;
+	right:0;
+	text-align:center;
+	position:absolute;
+	font-size:150px;
+	color:#FF0000;
+}
+
+#menu-top .menu-top-button-container{
+	width:40em;
+	height:40em;
+	color:#FFFFFF;
+	background-color:#EEEEEE;
+	border-radius:9999px;
+	margin:10em;
+}
+
+#menu-top .menu-top-button{
+	font-size:24em;
+    transform-origin:center;
+}
+#menu-top #back-to-menu-button{
+}
+#menu-top #replay-button{
+    transition: transform 0.3s;
+    transform:rotate(0deg);
+
+}
+#menu-top #replay-button:hover{
+    transform:rotate(360deg);
+}
+#menu-top #next-map-button{
 }

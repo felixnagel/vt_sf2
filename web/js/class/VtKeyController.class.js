@@ -19,37 +19,34 @@ function VtKeyController(){
 
 	window.onkeydown = function(event){
 		var keyCode = event.keyCode;
+
+		self.set_key_pressed(keyCode, true);
+
 		if(
 			!self.registeredKeys[keyCode]
-		 	||
-		 	event.repeat && !self.registeredKeys[keyCode].canRepeat
+			||
+			!self.registeredKeys[keyCode].keyDown
+			||
+			event.repeat && !self.registeredKeys[keyCode].canRepeat	
 		){
 			return;
 		}
-		
-		self.registeredKeys[keyCode].isPressed = true;
-		self.update_mask();
-		
-		if(
-			(event.repeat === false || self.registeredKeys[keyCode].canRepeat)
-			&&
-			!self.registeredKeys[keyCode].isLocked
-			&&
-			self.registeredKeys[keyCode].keyDown
-		){
+
+		if(!self.registeredKeys[keyCode].isLocked){
 			self.dispatch_event(event);
 		}
 	};
 
 	window.onkeyup = function(event){
 		var keyCode = event.keyCode;
-		if(!self.registeredKeys[keyCode]){
+
+		self.set_key_pressed(keyCode, false);
+
+		if(!self.registeredKeys[keyCode] || !self.registeredKeys[keyCode].keyUp){
 			return;
 		}
-		self.registeredKeys[keyCode].isPressed = false;
-		self.update_mask();
-	
-		if(!self.registeredKeys[keyCode].isLocked && self.registeredKeys[keyCode].keyUp){
+
+		if(!self.registeredKeys[keyCode].isLocked){
 			self.dispatch_event(event);
 		}
 	};
@@ -59,6 +56,12 @@ VtKeyController.prototype = {
 	key_mask: 0,
 	registeredKeys: {},
 	
+	set_key_pressed: function set_key_pressed(iKeyCode, bPressed){
+		if(this.registeredKeys[iKeyCode] !== undefined){
+			this.registeredKeys[iKeyCode].isPressed = bPressed;
+		}
+	},
+
 	update_mask: function update_mask(){
 		this.key_mask = 0;
 		for(var i in this.registeredKeys){
@@ -68,6 +71,7 @@ VtKeyController.prototype = {
 		}
 	},
 	dispatch_event: function dispatch_event(){
+		this.update_mask();
 		var event = new Event('VtKeyController');
 		event.vt_actions = {
 			raceRestart: (this.key_mask | this.BM.raceRestart) == this.key_mask,
@@ -76,6 +80,7 @@ VtKeyController.prototype = {
 			S: (this.key_mask & (this.BM.S | this.BM.W)) == this.BM.S,
 			D: (this.key_mask & (this.BM.A | this.BM.D)) == this.BM.D
 		};
+	
 		window.dispatchEvent(event);
 	},
 	register_key: function register_key(actionId, aKeys, jDef){
@@ -95,20 +100,20 @@ VtKeyController.prototype = {
 			}
 		}
 	},
-	supress_actions: function supress_actions(aActionIds, bLiftKeys = true){
+	lift_keys: function lift_keys(){
+		var event = new Event('VtKeyController');
+		event.vt_actions = {raceRestart: false, W: false, A: false, S: false, D: false};
+		window.dispatchEvent(event);
+	},
+	supress_actions: function supress_actions(aActionIds){
 		for(var iKey in this.registeredKeys){
 			for(var i = 0; i < aActionIds.length; i++){
 				if(this.registeredKeys[iKey].actionId === aActionIds[i]){
 					this.registeredKeys[iKey].isLocked = true;
-					if(bLiftKeys){
-						this.registeredKeys[iKey].isPressed = false;
-					}
 				}
 			}
 		}
-		if(bLiftKeys){
-			this.dispatch_event();
-		}
+		this.lift_keys();
 	},
 	allow_actions: function allow_actions(aActionIds){
 		for(var iKey in this.registeredKeys){
@@ -118,6 +123,7 @@ VtKeyController.prototype = {
 				}
 			}
 		}
+		this.dispatch_event();
 	}
 };
 

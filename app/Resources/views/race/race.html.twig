@@ -21,13 +21,48 @@
 {% endblock %}
 
 {% block body %}
-    <div class="" id="game-canvas"> 
-        <div id="clock-container">
-            <div id="clock"></div>
-        </div>
-        <div class="lnB-centered-container-wrapper" id="hud-centered">
+    <div id="loading-overlay">
+        <div class="lnB-centered-container-wrapper">
             <div class="lnB-centered-container">
-                <div id="hud-centered-text" class="fade-out-quick"></div>
+                <div id="loading-wrapper" class="lnB-centered-container-wrapper">
+                    <div class="lnB-centered-container">
+                        <div class="loading"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="menu-top">
+        <p class="menu-title">NOT FINISHED!</p>
+        <div class="lnB-centered-container-wrapper">
+            <div class="lnB-centered-container">
+                <div class="lnB-centered-container-wrapper menu-top-button-container lnB-ib">
+                    <div class="lnB-centered-container">
+                        <i id="back-to-menu-button" class="fa fa-stop menu-top-button"></i>
+                    </div>
+                </div>
+                <div class="lnB-centered-container-wrapper menu-top-button-container lnB-ib">
+                    <div class="lnB-centered-container">
+                        <i id="replay-button" class="fa fa-repeat menu-top-button"></i>
+                    </div>
+                </div>
+                <div class="lnB-centered-container-wrapper menu-top-button-container lnB-ib">
+                    <div class="lnB-centered-container">
+                        <i id="next-map-button" class="fa fa-step-forward menu-top-button"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="" id="game-canvas"> 
+        <div id="hud-container">
+            <div class="lnB-centered-container-wrapper" id="hud-centered">
+                <div id="clock-container"><div id="clock"></div></div>
+                <div class="lnB-centered-container">
+                    <div id="hud-centered-text" class=""></div>
+                </div>
             </div>
         </div>
 

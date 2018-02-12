@@ -1,12 +1,10 @@
 function VtClock(){
-	this.set_null();
+	this.set(0);
 };
 VtClock.prototype = {
 	_iS: null,
-	_sFormattedTime: null,
-	set_null: function set_null(){
-		this._iS = 0;
-		this._sFormattedTime = '00:00:00';
+	set: function set(iS){
+		this._iS = iS;
 	},
 	tick: function tick(iS){
 		this._iS += iS;
