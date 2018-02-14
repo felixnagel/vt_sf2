@@ -79,7 +79,7 @@ html, body{
 	left:0;
 	right:0;
 	z-index:20;
-	background-color:#FFFFFF;
+	background-color:rgba(75, 75, 75, 0.95);
 }
 #menu-top.visible{
 	transition:opacity 0.3s 0.7s;
@@ -131,13 +131,57 @@ html, body{
 	color:#FF0000;
 }
 
-#menu-top .menu-top-button-container{
+#menu-top .menu-button-container{
+	transform: scale(1.0);
+	transition:transform 0.2s ease-out;
+}
+#menu-top .bg-container{
 	width:40em;
 	height:40em;
 	color:#FFFFFF;
 	background-color:#EEEEEE;
 	border-radius:9999px;
-	margin:10em;
+	margin:2em 10em 3em 10em;
+	transition:background-color 0.2s ease-out;
+}
+#menu-top .menu-button-container:hover{
+	transform: scale(1.05);
+}
+#menu-top .menu-button-container:nth-child(1):hover .bg-container{
+	background-color:#FF77FF;
+}
+#menu-top .menu-button-container:nth-child(2):hover .bg-container{
+	background-color:#77FFFF;
+}
+#menu-top .menu-button-container:nth-child(3):hover .bg-container{
+	background-color:#FFFF77;
+}
+#menu-top .menu-button-container:nth-child(1) .bg-container{
+	background-color:#CCCCCC;
+}
+#menu-top .menu-button-container:nth-child(2) .bg-container{
+	background-color:#CCCCCC;
+}
+#menu-top .menu-button-container:nth-child(3) .bg-container{
+	background-color:#CCCCCC;
+}
+#menu-top .menu-button-container .button-caption{
+	color:#CCCCCC;
+	transition:color 0.2s ease-out;
+}
+#menu-top .menu-button-container:nth-child(1):hover .button-caption{
+	color:#FFF;
+}
+#menu-top .menu-button-container:nth-child(2):hover .button-caption{
+	color:#FFF;
+}
+#menu-top .menu-button-container:nth-child(3):hover .button-caption{
+	color:#FFF;
+}
+
+#menu-top .button-caption{
+	font-size:6em;
+	text-align:center;
 }
 
 #menu-top .menu-top-button{
@@ -147,7 +191,6 @@ html, body{
 #menu-top #back-to-menu-button{
 }
 #menu-top #replay-button{
-    transition: transform 0.3s;
     transform:rotate(0deg);
 
 }
