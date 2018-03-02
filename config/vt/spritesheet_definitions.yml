@@ -1,0 +1,64 @@
+parameters:
+  app.spritesheets:
+    explosion:
+      images: [explosion_1.png]
+      frames:
+        count: 120
+        height: 100
+        regX: 50
+        regY: 50
+        width: 100
+      animations:
+        explode: [0, 119, null, 1.0] 
+
+    start_1:
+      images: [start_1.png]
+      frames: 
+        width: 500
+        height: 500
+        count: 2
+      animations:
+        idle: 
+          frames: [0]
+          next:
+          speed: 0
+        pass:
+          frames: [1]
+          next:
+          speed: 1
+
+    cp1:
+      images: [cp_1.png]
+      frames: 
+        width: 150
+        regX: 75
+        regY: 75
+        height: 150
+        count: 180
+      animations:
+        idle: [0, 119, idle, 1.0] 
+        pass: [120, 179, null, 1.0]
+
+    ship:
+      images: [ship_1.png]
+      frames:
+        count: 420
+        height: 100
+        regX: 32
+        regY: 45
+        width: 64
+      animations:
+        0_left_to_straight: [0, 29, 0_straight, 1]
+        0_left: [30, 59, 0_left, 1]
+        0_right_to_straight: [60, 89, 0_straight, 1]
+        0_right: [90, 119, 0_right, 1]
+        0_straight_to_left: [120, 149, 0_left, 1]
+        0_straight_to_right: [150, 179, 0_right, 1]
+        0_straight: [180, 209, 0_straight, 1]
+        1_left_to_straight: [210, 239, 1_straight, 1]
+        1_left: [240, 269, 1_left, 1]
+        1_right_to_straight: [270, 299, 1_straight, 1]
+        1_right: [300, 329, 1_right, 1]
+        1_straight_to_left: [330, 359, 1_left, 1]
+        1_straight_to_right: [360, 389, 1_right, 1]
+        1_straight: [390, 419, 1_straight, 1]

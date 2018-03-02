@@ -1,0 +1,115 @@
+{% extends 'base.html.twig' %}
+
+
+{% block stylesheets %}
+	<link rel="stylesheet" href="{{ asset('css/race.css') }}" />
+    <link href="https://fonts.googleapis.com/css?family=Bangers|BioRhyme+Expanded:200|Calligraffitti|Ceviche+One|Comfortaa:300|Delius+Unicase:700|Dhurjati|Fugaz+One|Geo|Gloria+Hallelujah|Julius+Sans+One|Jura:600|Nosifer|PT+Sans+Caption|Petit+Formal+Script|Quicksand:300|Rationale|Reenie+Beanie|Revalia|Ropa+Sans|Sarpanch:400,900|Share+Tech+Mono|Short+Stack|Stalinist+One|Syncopate|UnifrakturCook:700" rel="stylesheet">  
+{% endblock %}
+
+
+{% block body_tag %}
+	data-ajax_url_submit_times="{{ path('validate/submit') }}"
+    data-ajax_url_load_map="{{ path('editor/load') }}"
+    data-sc_block_face_url="{{ asset(aC_dirs.blocks.face) }}"
+    data-sc_block_stroke_url="{{ asset(aC_dirs.blocks.stroke) }}"
+    data-sc_spritesheet_url="{{ asset(aC_dirs.spritesheets) }}"
+    data-jc_blocks="{{ aC_blocks|json_encode }}"
+    data-jc_spritesheets="{{ aC_spritesheets|json_encode }}"
+    data-jc_map="{{ aC_map|json_encode }}"
+    data-jc_ship="{{ aC_ship|json_encode }}"
+    data-j_times="{{ aTimes|json_encode }}"
+{% endblock %}
+
+{% block body %}
+    <div id="loading-overlay">
+        <div class="lnB-centered-container-wrapper">
+            <div class="lnB-centered-container">
+                <div id="loading-wrapper" class="lnB-centered-container-wrapper">
+                    <div class="lnB-centered-container">
+                        <div class="loading"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="menu-top">
+        <div class="lnB-centered-container-wrapper">
+            <div class="lnB-centered-container">
+                <div class="lnB-ib menu-button-container">
+                    <p class="button-caption">MAIN MENU</p>
+                    <div id="back-to-menu-button-container" class="lnB-centered-container-wrapper bg-container lnB-ib">
+                        <div class="lnB-centered-container">
+                            <i id="back-to-menu-button" class="fa fa-stop menu-top-button"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="lnB-ib menu-button-container" data-trigger-event="race_restart">
+                    <p class="button-caption">RESTART</p>
+                    <div id="replay-button-container" class="lnB-centered-container-wrapper bg-container">
+                        <div class="lnB-centered-container">
+                            <i id="replay-button" class="fa fa-repeat menu-top-button"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="lnB-ib menu-button-container">
+                    <p class="button-caption">NEXT MAP</p>
+                    <div id="next-map-button-container" class="lnB-centered-container-wrapper bg-container lnB-ib">
+                        <div class="lnB-centered-container">
+                            <i id="next-map-button" class="fa fa-step-forward menu-top-button"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="" id="game-canvas"> 
+        <div id="hud-container">
+            <div class="lnB-centered-container-wrapper" id="hud-centered">
+                <div id="clock-container"><div id="clock"></div></div>
+                <div class="lnB-centered-container">
+                    <div id="hud-centered-text" class=""></div>
+                </div>
+            </div>
+        </div>
+
+        <span id="debug" style="position:absolute; top:0; left:0; color:red; z-index:100;"></span>
+        <div id="spotlight"></div>
+        <div id="camera-container">
+            <div id="map-container">
+                <img src="" alt="" id="map" />
+            </div>
+        </div>
+    </div>
+
+    <div class="hud-right-box lnB-p12 lnB-display-none" id="hud-top-box-proto">
+        <div class="lnB-centered-container-wrapper">
+            <div class="lnB-centered-container hud-top-box-content"></div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('js/lib/easeljs-0.8.2.min.js') }}"></script>
+
+    <script src="{{ asset('js/components/base.component.js') }}"></script>
+    <script src="{{ asset('js/components/race2.component.js') }}"></script>
+    <script src="{{ asset('js/components/api.component.js') }}"></script>
+
+    <script src="{{ asset('js/class/AlphaBlock.class.js') }}"></script>
+    <script src="{{ asset('js/class/TerrainBlock.class.js') }}"></script>
+    <script src="{{ asset('js/class/BlockData.class.js') }}"></script>
+    <script src="{{ asset('js/class/Times.class.js') }}"></script>
+    <script src="{{ asset('js/class/KeyController.class.js') }}"></script>
+    <script src="{{ asset('js/class/VtKeyController.class.js') }}"></script>
+    <script src="{{ asset('js/class/VtClock.class.js') }}"></script>
+    <script src="{{ asset('js/class/Grid.class.js') }}"></script>
+    <script src="{{ asset('js/class/Ship.class.js') }}"></script>
+    <script src="{{ asset('js/class/Map.class.js') }}"></script>
+    <script src="{{ asset('js/class/SimpleDisplay.class.js') }}"></script>
+    <script src="{{ asset('js/class/ColorProjector.class.js') }}"></script>
+
+    <script src="{{ asset('js/controller/race.js') }}"></script>
+{% endblock %}

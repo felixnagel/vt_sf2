@@ -1,0 +1,27 @@
+parameters:
+  app.base_urls:
+    blocks:
+      face: images/blocks/face/
+      stroke: images/blocks/stroke/
+      brush: images/blocks/brush/
+    spritesheets: images/spritesheets/
+
+  app.map:
+    tiles:
+      count:
+        x: 20
+        y: 20
+      edge:
+        race: 400
+        editor: 200
+      stroke_oversize: 10
+
+  app.ship:
+    mass: 1
+    friction: 0.95
+    handling: 360 # degree per second
+    v_max: 1600 # px per second
+    rotation: 0
+
+
+# http://paletton.com/#uid=72W0u0kk8++7f+Wew+Zpz+WvHZJ

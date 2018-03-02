@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block body_tag %}
+    data-jc_blocks="{{ aC_blocks|json_encode }}"
+    data-jc_map="{{ aC_map|json_encode }}"
+{% endblock %}
+
+{% block body %}
+	{% for sBlockId, aBlock in aC_blocks %}
+		{% if aBlock.role == 'terrain' %}
+			<div style="margin:10px; display:inline-block">
+				<p>{{ sBlockId }}</p>
+				<canvas 
+					id="plot-canvas-{{ sBlockId }}"
+					width="{{ aC_map.tiles.edge.race }}"
+					height="{{ aC_map.tiles.edge.race }}" 
+					style="display:none;">
+				</canvas>
+				<img id="plot-img-{{ sBlockId }}" src="" alt="" style="outline:1px solid red;"/>
+			</div>
+		{% endif %}
+    {% endfor %}
+
+
+
+{% endblock body %}
+
+{% block javascripts %}
+    <script src="{{ asset('js/class/AlphaBlock.class.js') }}"></script>
+    <script src="{{ asset('js/class/TerrainBlock.class.js') }}"></script>
+    <script src="{{ asset('js/controller/plot.js') }}"></script>
+{% endblock %}
