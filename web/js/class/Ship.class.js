@@ -153,6 +153,12 @@ Ship.prototype = {
 		 */
 		this.vx += dt * (this._F_ex + this.F_0x + this._F_fx) / this.mass;
 		this.vy += dt * (this._F_ey + this.F_0y + this._F_fy) / this.mass;
+		
+		if(this.bHandbrake){
+			this.vx *= 0.98;
+			this.vy *= 0.98;
+		}
+
 		this.vxRel = this.vx / this.v_max;
 		this.vyRel = this.vy / this.v_max;
 		this.vAbs  = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
@@ -205,5 +211,11 @@ Ship.prototype = {
 		this.vyRel = 0;
 		this.vAbs = 0;
 		*/
-	}
+	},
+	activate_handbrake: function activate_handbrake(){
+		this.bHandbrake = true;
+	},
+	release_handbrake: function release_handbrake(){
+		this.bHandbrake = false;
+	},
 };

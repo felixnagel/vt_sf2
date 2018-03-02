@@ -1,15 +1,11 @@
-'use strict';
-
-$(document).ready(function(){
+$(document).ready(function(){'use strict';
 	var
 		_$document = $(document),
 		_$body = $('body'),
 		
-		_BRUSHES = _$body.data('jc_brushes'),
 		_BLOCKS = _$body.data('jc_blocks'),
-		_GRIDSIZE = _$body.data('jc_map').tiles.edge.editor,
 
-		_Grid = new Grid(_GRIDSIZE),
+		_Grid = new Grid(_$body.data('jc_map').tiles.edge.editor),
 		_BlockData = new BlockData(_BLOCKS, ['terrain']),
 		_BlockDataCp = new BlockData(_BLOCKS, ['starting_position', 'checkpoint']),
 
@@ -25,12 +21,8 @@ $(document).ready(function(){
 		_$verticalScrollbarContainer = $('#vertical-scrollbar-container'),
 		_$verticalScrollbarHandle = _$verticalScrollbarContainer.find('>div'),
 
-	VAR_END;
+		_bCancelPaintEvent = false,
 
-	var
-		_bCancelPaintEvent = false;
-
-	var
 		m = {
 			rotate_element: function rotate_element($element, iDegree){
 				if(iDegree === undefined){
@@ -93,7 +85,7 @@ $(document).ready(function(){
 					$newBlock = m.get_proto_block(jEssentials.id).clone(),
 					blockData = _BlockDataCp.create_block_data(jEssentials);
 
-				if(blockData.role === 'clear_checkpoint'){
+				if(blockData.id === 'clear_checkpoint'){
 					return;
 				}
 

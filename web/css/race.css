@@ -14,7 +14,7 @@ html, body{
 	filter:grayscale(0);
 	transition:filter 3.0s;
 }
-#game-canvas.blurred{
+#game-canvas.monochrome{
 	filter:grayscale(1);
 	transition:filter 0.3s;
 }
@@ -80,13 +80,14 @@ html, body{
 	right:0;
 	z-index:20;
 	background-color:rgba(75, 75, 75, 0.95);
+	visibility:hidden;
 }
+
 #menu-top.visible{
-	transition:opacity 0.3s 0.7s;
+	transition:opacity 0.3s;
 	opacity:1;
+	visibility:visible;
 }
-
-
 
 #map-container canvas{
 	z-index:10;
@@ -134,6 +135,7 @@ html, body{
 #menu-top .menu-button-container{
 	transform: scale(1.0);
 	transition:transform 0.2s ease-out;
+	cursor:pointer;
 }
 #menu-top .bg-container{
 	width:40em;
