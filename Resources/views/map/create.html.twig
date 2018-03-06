@@ -1,0 +1,90 @@
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+	<link rel="stylesheet" href="{{ asset('css/editor.css') }}" />
+{% endblock %}
+
+{% block body_tag %}
+	data-ajax_url_load_map="{{ path('editor/load') }}"
+	data-ajax_url_save_map="{{ path('editor/save') }}"
+	data-jc_blocks="{{ aC_blocks|json_encode }}"
+	data-jc_brushes="{{ aC_brushes|json_encode }}"
+	data-jc_dirs="{{ aC_dirs|json_encode }}"
+	data-jc_map="{{ aC_map|json_encode }}"
+{% endblock %}
+
+{% block body %}
+	<button id="save-button">Save</button>
+	<button id="load-button">Load</button>
+
+	<section id="grid-container">
+		<div 
+			id="grid-outer"
+			style="
+				width:{{ aC_map.tiles.edge.editor*aC_map.tiles.count.x }}px;
+				height:{{ aC_map.tiles.edge.editor*aC_map.tiles.count.y }}px;
+			"
+		>
+			<section id="grid-inner">
+				<div id="paint-brush-container"></div>
+			</section>
+		</div>
+		<div id="horizontal-scrollbar-container">
+			<div></div>
+		</div>
+		<div id="vertical-scrollbar-container">
+			<div></div>
+		</div>
+	</section>
+
+	<section id="block-proto-container">
+		{% for sBlockId, aBlock in aC_blocks %}
+	        <figure 
+	        	class="block"
+	        	style="
+	        		background-image:url({{ asset(aC_dirs.blocks.brush ~ sBlockId) }}.png);
+					width:{{ aC_map.tiles.edge.editor }}px;
+					height:{{ aC_map.tiles.edge.editor }}px;
+	        	"
+	        	data-block_id="{{ sBlockId }}"
+	        	data-rotation="0"
+	        ></figure>
+	    {% endfor %}
+	</section>
+
+	<section id="brush-container">
+		{% for iBrushGroup, aBrushGroup in aC_brushes %}
+			<section 
+				class="lnG lnG-tc-12"
+				data-group-id="{{ iBrushGroup }}"
+			>
+				{% for aBrush in aBrushGroup %}
+			        <div class="lnG-tile lnG-col">
+				        <figure
+				        	class="brush"
+				        	style="background-image:url({{ asset(aC_dirs.blocks.brush ~ aBrush.block_id) }}.png)"
+				        	data-block_id="{{ aBrush.block_id }}"
+				        	data-rotation="0"
+				        ></figure>
+				    </div>
+		    	{% endfor %}
+		    </section>
+	    {% endfor %}
+	</section>
+{% endblock %}
+
+
+{% block javascripts %}
+    <script src="{{ asset('js/class/AlphaBlock.class.js') }}"></script>
+
+    <script src="{{ asset('js/class/BlockData.class.js') }}"></script>
+    <script src="{{ asset('js/class/Grid.class.js') }}"></script>
+    <script src="{{ asset('js/class/TerrainBlock.class.js') }}"></script>
+
+	<script src="{{ asset('js/components/base.component.js') }}"></script>
+	
+	<script src="{{ asset('js/components/api.component.js') }}"></script>
+    <script src="{{ asset('js/lib/fnagel-drag_jquery-plugin.js') }}"></script>
+
+    <script src="{{ asset('js/controller/editor.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,78 @@
+parameters:
+  app.brushes:
+  -
+    -
+      block_id: clear_checkpoint
+
+    -
+      block_id: start_1
+
+    -
+      block_id: cp1
+
+  -
+    -
+      block_id: clear_terrain
+
+    -
+      block_id: e01    
+
+    -
+      block_id: e11
+
+    -
+      block_id: e12
+
+    -
+      block_id: e13
+
+    -
+      block_id: e21
+
+    -
+      block_id: e22
+
+    -
+      block_id: e23
+
+    -
+      block_id: c01
+
+    -
+      block_id: c02
+
+    -
+      block_id: c11
+
+    -
+      block_id: c12
+
+    -
+      block_id: c13
+
+    -
+      block_id: c21
+
+    -
+      block_id: c22
+
+    -
+      block_id: c23
+
+    -
+      block_id: s11
+
+    -
+      block_id: s12
+
+    -
+      block_id: s13
+
+    -
+      block_id: s21
+
+    -
+      block_id: s22
+
+    -
+      block_id: s23
