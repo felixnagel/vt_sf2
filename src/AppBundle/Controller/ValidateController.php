@@ -16,8 +16,10 @@ class ValidateController extends DefaultController implements AuthentificatedCon
      * @Route("/validate/map/{map_id}", name="validate/map")
      */
     public function validateAction($map_id){
-        $iUserId = $this->get('security.token_storage')->getToken()->getUser()->getId();
         $this->_set_current_map($map_id);
+        
+        $iUserId = $this->_get_user_id_from_session();
+        $iMapId = $this->_get_current_map_id_from_session();
 
         $aTplData = [
             'aC_blocks' => $this->container->getParameter('app.blocks'),
@@ -25,7 +27,7 @@ class ValidateController extends DefaultController implements AuthentificatedCon
             'aC_map' => $this->container->getParameter('app.map'),
             'aC_ship' => $this->container->getParameter('app.ship'),
             'aC_spritesheets' => $this->container->getParameter('app.spritesheets'),
-            'aTimes' => $this->_get_times()->getCheckpointTimes(),
+            'aTimes' => $this->_get_player_time($iMapId, $iUserId)->getCheckpointTimes(),
         ];
 
         //return $this->render('race/validate.html.twig', $aTplData);
@@ -35,10 +37,10 @@ class ValidateController extends DefaultController implements AuthentificatedCon
      * @Route("/validate/submit", name="validate/submit")
      */
     public function submitTimesAction(Request $request){
-        $iUserId = $this->get('security.token_storage')->getToken()->getUser()->getId();
-        $iMapId = $this->_get_current_map();
+        $iUserId = $this->_get_user_id_from_session();
+        $iMapId = $this->_get_current_map_id_from_session();
 
-        $oMap = $this->_load_map($iMapId);
+        $oMap = $this->_get_map($iMapId);
         if($oMap->getCreatedBy() != $iUserId){
             throw new \Exception(sprintf(
                 'Map createdBy differs from iUserId! | user_id[%s], map_id[%s]', $iUserId, $oMap->getId()
@@ -60,7 +62,7 @@ class ValidateController extends DefaultController implements AuthentificatedCon
         $aTimes = $times;
         $iFinishTime = $aTimes[count($aTimes)-1];
 
-        $oTimes = $this->_get_times();
+        $oTimes = $this->_get_player_time($iMapId, $iUserId);
         $aOldCheckpointTimes = $oTimes->getCheckpointTimes();
 
         if(!$aOldCheckpointTimes || $oTimes->getFinishTime() > $iFinishTime){
@@ -78,9 +80,10 @@ class ValidateController extends DefaultController implements AuthentificatedCon
      * @Route("/validate/load", name="validate/load")
      */
     public function loadAction(){
-        $iUserId = $this->get('security.token_storage')->getToken()->getUser()->getId();
+        $iUserId = $this->_get_user_id_from_session();
+        $iMapId = $this->_get_current_map_id_from_session();
 
-        $oMap = $this->_load_map();
+        $oMap = $this->_get_map($iMapId);
 
         if($oMap->getCreatedBy() != $iUserId){
             throw new \Exception(sprintf(
@@ -94,6 +97,51 @@ class ValidateController extends DefaultController implements AuthentificatedCon
         }
 
         return new JsonResponse($oMap->getBlocks());
+    }
+    /**
+     * @Route("/validate/scoreboard", name="validate/scoreboard")
+     */
+    public function showScoreboardAction(){
+        $iUserId = $this->_get_user_id_from_session();
+        $iMapId = $this->_get_current_map_id_from_session();
+        $oMap = $this->_get_map($iMapId);
+
+        // Map Creator
+        $oMapCreator = $this->getDoctrine()->getRepository('AppBundle:Users')->findOneBy([
+            'id' => $oMap->getCreatedBy(),
+        ]);
+        if(!$oMapCreator){
+            throw new \Exception(sprintf(
+                'No map creator could be found in DB! | player_id[%s]', $oMap->getCreatedBy()
+            ));
+        }
+
+        // Global Best Time
+        $oGlobalBest = $this->_get_map_record($iMapId);
+
+        // Personal Best
+        $oPlayerTime = $this->_get_player_time($iMapId, $iUserId);
+
+        // Map Times
+        $aMapTimes = $this->_get_map_times($iMapId);
+
+        $aPlayerRank = $this->_get_player_map_rank($iMapId, $iUserId);
+
+
+        dump($oMapCreator);
+        dump($oGlobalBest);
+        dump($oPlayerTime);
+        dump($aMapTimes);
+        dump($aPlayerRank);
+
+
+        $aTplData = [
+            'sCreatedBy' => $oMapCreator->getUsername(),
+            'sGlobalBest' => $oGlobalBest->getFinishTime(),
+            'sPersonalBest' => $oPlayerTime->getFinishTime(),
+        ];
+
+        return $this->render('race/scoreboard.html.twig', $aTplData);
     }
 
 

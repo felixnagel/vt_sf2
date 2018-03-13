@@ -18,11 +18,13 @@ class DefaultController extends Controller{
         $iMapId = (int)$map_id;
         $this->get('session')->set('current_map', $iMapId);
     }
-    protected function _get_current_map(){
+    protected function _get_current_map_id_from_session(){
         return $this->get('session')->get('current_map');
     }
-    protected function _load_map(){
-        $iMapId = $this->_get_current_map();
+    protected function _get_user_id_from_session(){
+        return $this->get('security.token_storage')->getToken()->getUser()->getId();
+    }
+    protected function _get_map($iMapId){
         $oMap = $this->getDoctrine()->getRepository('AppBundle:Map')->findOneBy([
             'id' => $iMapId,
         ]);
@@ -34,9 +36,9 @@ class DefaultController extends Controller{
 
         return $oMap;
     }
-    protected function _get_times(){
-        $iUserId = $this->get('security.token_storage')->getToken()->getUser()->getId();
-        $iMapId = $this->_get_current_map();
+    protected function _get_player_time($iMapId, $iUserId){
+        $iUserId = $this->_get_user_id_from_session();
+        $iMapId = $this->_get_current_map_id_from_session();
 
         $oTimes = $this->getDoctrine()->getRepository('AppBundle:Times')->findOneBy([
             'mapId' => $iMapId,
@@ -49,10 +51,34 @@ class DefaultController extends Controller{
         }
         return $oTimes;
     }
+    protected function _get_map_times($iMapId){
+        $aTimes = $this->getDoctrine()->getRepository('AppBundle:Times')->findBy(
+            ['mapId' => $iMapId], ['finishTime' => 'ASC']
+        );
+        return $aTimes;
+    }
+    protected function _get_map_record($iMapId){
+        return $this->_get_map_times($iMapId)[0];
+    }
+    protected function _get_player_map_rank($iMapId, $iUserId){
+        $oPlayerTime = $this->_get_player_time($iMapId, $iUserId);
+        if(!$oPlayerTime->getFinishTime()){
+            return false;
+        }
+        
+        $criteria = new \Doctrine\Common\Collections\Criteria();
+        $criteria->where($criteria::expr()->lt('finishTime', $oPlayerTime->getFinishTime()));
+
+        $result = $this->getDoctrine()->getRepository('AppBundle:Times')->matching($criteria);
+
+        return $result;
+    }
+
+
     /*
     protected function _store_times(){
-        $iUserId = $this->get('security.token_storage')->getToken()->getUser()->getId();
-        $iMapId = $this->_get_current_map();
+        $iUserId = $this->_get_user_id_from_session();
+        $iMapId = $this->_get_current_map_id_from_session();
 
         $oTimes = $this->getDoctrine()->getRepository('AppBundle:Times')->findOneBy([
             'mapId' => $iMapId,

@@ -450,6 +450,15 @@ $(document).ready(function(){'use strict';
 				clearTimeout(_showDeathMenuTimeoutReference);
 				_showDeathMenuTimeoutReference = setTimeout(function(){
 					_$topMenu.addClass('visible');
+console.log($('body').data('ajax_url_show_scoreboard'));
+					$.ajax({
+						type: 'GET',
+						url: $('body').data('ajax_url_show_scoreboard'),
+						success: function(data){
+							console.log(data);
+						}
+					});
+
 				}, 1000);
 			},
 			hide_death_menu: function hide_death_menu(){
@@ -559,7 +568,7 @@ $(document).ready(function(){'use strict';
 							AWESOME!
 							--------
 						
-						YOU CLAIM RANK 21!
+							RANK (21)
 
 YOUR TIME: 00:12:45					
 PERSONAL BEST: 00:11:87				CHALLENGER'S MEDAL: [X]

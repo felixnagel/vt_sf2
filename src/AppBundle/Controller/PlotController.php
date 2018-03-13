@@ -14,9 +14,6 @@ class PlotController extends DefaultController implements AuthentificatedControl
      * @Route("/plot", name="/plot")
      */
     public function plotAction(){
-        $iUserId = $this->get('security.token_storage')->getToken()->getUser()->getId();
-        
-
         $aTplData = [
             'aC_blocks' => $this->container->getParameter('app.blocks'),
             'aC_map' => $this->container->getParameter('app.map'),

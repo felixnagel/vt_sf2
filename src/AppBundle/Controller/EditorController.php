@@ -15,7 +15,7 @@ class EditorController extends DefaultController implements AuthentificatedContr
      * @Route("/editor/new"), name="editor/new")
      */
     public function newAction(){
-        $iUserId = $this->get('security.token_storage')->getToken()->getUser()->getId();
+        $iUserId = $this->_get_user_id_from_session();
 
         $oMap = new Map();
         $oMap->setCreatedBy($iUserId);
@@ -31,10 +31,10 @@ class EditorController extends DefaultController implements AuthentificatedContr
      * @Route("/editor/load", name="editor/load")
      */
     public function loadAction(){
-        $iUserId = $this->get('security.token_storage')->getToken()->getUser()->getId();
-        $iMapId = $this->_get_current_map();
+        $iUserId = $this->_get_user_id_from_session();
+        $iMapId = $this->_get_current_map_id_from_session();
         
-        $oMap = $this->_load_map();
+        $oMap = $this->_get_map($iMapId);
         if($oMap->getCreatedBy() != $iUserId){
             throw new \Exception(sprintf(
                 'Map createdBy differs from iUserId! | user_id[%s], map_id[%s]', $iUserId, $oMap->getId()
@@ -69,7 +69,7 @@ class EditorController extends DefaultController implements AuthentificatedContr
      * @Route("/editor/save", name="editor/save")
      */
     public function saveAction(Request $oRequest){
-        $iUserId = $this->get('security.token_storage')->getToken()->getUser()->getId();
+        $iUserId = $this->_get_user_id_from_session();
         $iMapId = $this->_get_current_map();
 
         $oMap = $this->getDoctrine()->getRepository('AppBundle:Map')->findOneBy([
@@ -92,7 +92,7 @@ class EditorController extends DefaultController implements AuthentificatedContr
         $sBlocks = (string)$blocks;
         if($sBlocks !== $oMap->getBlocks()){
             $oMap->setReleasedAt(null);
-            $oTimes = $this->_get_times();
+            $oTimes = $this->_get_player_time($iMapId, $iUserId);
             $oTimes->setFinishTime(null);
             $oTimes->setCheckpointTimes(null);
             $oTimes->setCreatedAt(null);
