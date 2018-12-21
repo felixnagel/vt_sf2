@@ -71,6 +71,8 @@ class DefaultController extends Controller{
 
         $result = $this->getDoctrine()->getRepository('AppBundle:Times')->matching($criteria);
 
+        dump($result);
+
         return $result;
     }
 

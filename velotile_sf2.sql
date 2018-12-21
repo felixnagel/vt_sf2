@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Erstellungszeit: 02. Mrz 2018 um 17:24
+-- Erstellungszeit: 21. Dez 2018 um 15:18
 -- Server-Version: 5.6.24
 -- PHP-Version: 5.6.8
 
@@ -99,14 +99,16 @@ CREATE TABLE IF NOT EXISTS `vt_times` (
   `player_id` int(11) NOT NULL,
   `finish_time` double DEFAULT NULL,
   `checkpoint_times` longtext COLLATE utf8mb4_unicode_ci COMMENT '(DC2Type:simple_array)'
-) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Daten für Tabelle `vt_times`
 --
 
 INSERT INTO `vt_times` (`id`, `map_id`, `created_at`, `player_id`, `finish_time`, `checkpoint_times`) VALUES
-(12, 1, '2018-03-01 14:29:15', 2, 10.758, '1.906,4.475,7.889,8.845,10.758');
+(13, 1, '2018-04-15 14:09:03', 2, 11.292, '1.985,5.002,8.467,9.429,11.292'),
+(14, 1, '2018-03-31 22:50:34', 3, 13.381, '2.051,4.925,8.311,9.366,13.381'),
+(15, 1, '2018-03-31 22:50:34', 1, 10.381, '2.051,4.925,8.311,9.366,10.381');
 
 --
 -- Indizes der exportierten Tabellen
@@ -159,7 +161,7 @@ ALTER TABLE `vt_player`
 -- AUTO_INCREMENT für Tabelle `vt_times`
 --
 ALTER TABLE `vt_times`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT,AUTO_INCREMENT=16;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
